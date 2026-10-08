@@ -1,0 +1,1073 @@
+@import '/static/website/assets/css/causes_category.min.css';
+
+
+  /* ── Desktop causes redesign ── */
+  .skeleton {
+    position: relative;
+    background: #e8e8e8;
+    overflow: hidden;
+    border-radius: 8px
+  }
+
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .45), transparent);
+    animation: shimmer 1.4s infinite
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%)
+    }
+
+    100% {
+      transform: translateX(100%)
+    }
+  }
+
+  .skeleton--video {
+    width: 100%;
+    aspect-ratio: 16/9
+  }
+
+  .skeleton--slide {
+    width: 100%;
+    min-height: 250px
+  }
+
+  .skeleton--loaded {
+    background: none !important
+  }
+
+  .skeleton--loaded::after {
+    display: none
+  }
+
+  /* Page container */
+  .dk-page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 32px 24px 60px
+  }
+
+  /* ══ OVERRIDE causes_category.css globals that break desktop layout ══ */
+  .dk-page .slide-content {
+    position: relative !important;
+    width: 100% !important;
+    border-radius: 0 !important
+  }
+
+  .dk-page .slide-content img {
+    width: 100% !important;
+    height: 570px !important;
+    border-radius: 0 !important;
+    object-fit: contain !important
+  }
+
+  .dk-page .ig-full {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+    gap: 12px !important;
+    margin-top: 0 !important
+  }
+
+  .dk-page .ig-ct {
+    border-radius: 12px !important;
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 1
+  }
+
+  .dk-page .ig-ct img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 0 !important
+  }
+
+  /* ── Hero: Slider left + Info right ── */
+  .dk-hero {
+    display: grid;
+    grid-template-columns: 1fr 522px;
+    gap: 40px;
+    align-items: start
+  }
+
+  .dk-slider-wrap {
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    background: #f0f0f0
+  }
+
+  .dk-slider-wrap .splide__pagination {
+    bottom: 12px
+  }
+
+  .dk-slider-wrap .splide__pagination__page {
+    background: rgba(255, 255, 255, .5);
+    width: 8px;
+    height: 8px
+  }
+
+  .dk-slider-wrap .splide__pagination__page.is-active {
+    background: #fff;
+    transform: scale(1.2)
+  }
+
+  .dk-slider-wrap .splide__arrow {
+    background: rgba(255, 255, 255, .85);
+    width: 36px;
+    height: 36px;
+    opacity: .8
+  }
+
+  .dk-slider-wrap .splide__arrow:hover {
+    opacity: 1
+  }
+
+  .dk-slider-wrap .splide__arrow svg {
+    width: 16px;
+    height: 16px;
+    fill: #333
+  }
+
+  /* Left column: slider stacked over the trust badges. The slider itself
+     clips to its rounded corners, so the badges live outside it. */
+  .dk-hero-left {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0
+  }
+
+  .dk-trust {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px
+  }
+
+  /* Card styling copied from packages_form.html's .pkg-trust so both pages
+     read as the same component. */
+  .dk-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 13px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, .04)
+  }
+
+  .dk-trust-icon {
+    flex: 0 0 auto;
+    font-size: 21px;
+    line-height: 1
+  }
+
+  .dk-trust-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.3
+  }
+
+  .dk-trust-sub {
+    font-size: 11.5px;
+    color: #64748b;
+    line-height: 1.35
+  }
+
+  @media (max-width: 1100px) {
+    .dk-trust { grid-template-columns: repeat(2, 1fr) }
+  }
+
+
+  /* Info panel */
+  .dk-info {
+    position: sticky;
+    top: 90px;
+    padding: 28px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, .06)
+  }
+
+  .dk-cause-name {
+    font-size: 26px;
+    font-weight: 800;
+    color: #1a1a1a;
+    line-height: 1.25;
+    margin: 0 0 4px
+  }
+
+  .dk-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ff6600;
+    margin: 0 0 20px
+  }
+
+  .dk-cta {
+    display: block;
+    width: 100%;
+    padding: 15px 0;
+    text-align: center;
+    background: linear-gradient(135deg, #009dff 0%, #0070cc 100%);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 12px;
+    text-decoration: none;
+    letter-spacing: .3px;
+    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 4px 18px rgba(0, 157, 255, .3)
+  }
+
+  .dk-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0, 157, 255, .4);
+    color: #fff
+  }
+
+  /* ══ Inline quick-donate form (dk-qf) ══
+     Replaces the "Donate Now → wizard modal" step: name · whatsapp ·
+     occasion · count → total → pay, all on the info panel itself. */
+  .dk-qf {
+    margin: 0
+  }
+
+  .dk-qf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px
+  }
+
+  .dk-qf-field {
+    position: relative
+  }
+
+  /* Odd field out (count) — takes the whole row rather than sitting half-empty. */
+  .dk-qf-field-wide {
+    grid-column: 1 / -1
+  }
+
+  /* Count presets, parked inside the field on the right. The input reserves
+     room for them with its own padding-right below. */
+  .dk-qf-chips {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 5px;
+    z-index: 3
+  }
+
+  .dk-qf-chip {
+    min-width: 38px;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f7f8fa;
+    color: #475569;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: inherit;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s
+  }
+
+  .dk-qf-chip:hover {
+    border-color: #009dff;
+    color: #0f172a
+  }
+
+  .dk-qf-chip.is-active {
+    background: #009dff;
+    border-color: #009dff;
+    color: #fff
+  }
+
+  #foodcount {
+    padding-right: 208px
+  }
+
+  .dk-qf-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+    pointer-events: none;
+    z-index: 2
+  }
+
+  .dk-page .dk-qf-input {
+    width: 100%;
+    height: 45px;
+    padding: 4px 12px 0 38px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #0f172a;
+    outline: none;
+    box-shadow: none;
+    font-family: inherit;
+    transition: border-color .2s, box-shadow .2s;
+    -moz-appearance: textfield;
+    appearance: textfield
+  }
+
+  .dk-page .dk-qf-input::-webkit-outer-spin-button,
+  .dk-page .dk-qf-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0
+  }
+
+  .dk-page .dk-qf-input:focus {
+    border-color: #009dff;
+    box-shadow: 0 0 0 3px rgba(0, 157, 255, .12)
+  }
+
+  .dk-page .dk-qf-input::placeholder {
+    color: #94a3b8
+  }
+
+  .dk-page .dk-qf-input.error {
+    border-color: #ef4444
+  }
+
+  /* Native select needs its own arrow — the default one sits too far right.
+     Scoped under .dk-page so it outweighs the shared .dk-qf-input padding. */
+  .dk-page select.dk-qf-input {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%2394a3b8' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    cursor: pointer
+  }
+
+  /* Floating label: centred until the field has a value, then shrinks up. */
+  .dk-qf-label {
+    position: absolute;
+    left: 38px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    color: #94a3b8;
+    pointer-events: none;
+    transition: all .18s ease;
+    margin: 0;
+    z-index: 2
+  }
+
+  .dk-qf-input:focus~.dk-qf-label,
+  .dk-qf-input:not(:placeholder-shown)~.dk-qf-label,
+  .dk-qf-label.is-up {
+    top: 3px;
+    transform: none;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    color: #009dff
+  }
+
+  /* Fields whose label is permanently up (date, prefilled count). A date input
+     can't use :placeholder-shown, so its label carries .is-up from the markup. */
+  .dk-qf-input.has-value {
+    padding-top: 14px
+  }
+
+  input[type="date"].dk-qf-input::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: .55
+  }
+
+  /* intl-tel-input draws the flag + dial code inside the phone field. */
+  .dk-qf-phone .iti {
+    display: block;
+    width: 100%
+  }
+
+  .dk-page .dk-qf-phone .dk-qf-input {
+    padding-left: 14px
+  }
+
+  /* ── Add-ons: one row per AddOn, priced per parcel ──
+     A closed-by-default disclosure, like Packages below it, so the card keeps
+     its height until the donor asks for the extras. */
+  .dk-qf-addons {
+    margin-top: 10px
+  }
+  .dk-qf-addons-head {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a
+  }
+  .dk-qf-addons-hint {
+    font-size: 11px;
+    font-weight: 500;
+    color: #94a3b8
+  }
+  .dk-qf-addons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px
+  }
+  .dk-qf-addons-grid[hidden] {
+    display: none
+  }
+  .dk-qf-addon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    min-width: 0;
+    transition: border-color .15s, background .15s
+  }
+  .dk-qf-addon:hover {
+    border-color: #bae0ff
+  }
+  .dk-qf-addon:has(.dk-qf-addon-check:checked) {
+    border-color: #009dff;
+    background: #f0f8ff
+  }
+  .dk-qf-addon-check {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    accent-color: #009dff;
+    margin: 0;
+    cursor: pointer
+  }
+  .dk-qf-addon-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a
+  }
+  .dk-qf-addon-price {
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 700;
+    color: #009dff
+  }
+
+  /* ── Packages: a closed-by-default dropdown; one row each, with the fields
+       that package needs underneath ── */
+  .dk-qf-pkgs {
+    margin-top: 10px
+  }
+  .dk-qf-pkgs-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .15s
+  }
+  .dk-qf-pkgs-toggle:hover {
+    border-color: #bae0ff
+  }
+  .dk-qf-pkgs-toggle .dk-qf-addons-head {
+    flex: 1 1 auto;
+    margin: 0
+  }
+  .dk-qf-pkgs-count {
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 700;
+    color: #009dff
+  }
+  .dk-qf-pkgs-caret {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+    transition: transform .18s ease
+  }
+  .dk-qf-pkgs-toggle[aria-expanded="true"] .dk-qf-pkgs-caret {
+    transform: rotate(180deg)
+  }
+  .dk-qf-pkgs-body {
+    margin-top: 8px
+  }
+  .dk-qf-pkgs-body[hidden] {
+    display: none
+  }
+  .dk-qf-pkg-list {
+    display: grid;
+    gap: 8px
+  }
+  .dk-qf-pkg {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 11px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    min-width: 0;
+    transition: border-color .15s, background .15s
+  }
+  .dk-qf-pkg:hover {
+    border-color: #bae0ff
+  }
+  .dk-qf-pkg:has(.dk-qf-pkg-check:checked) {
+    border-color: #009dff;
+    background: #f0f8ff
+  }
+  .dk-qf-pkg-check {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    accent-color: #009dff;
+    margin: 0;
+    cursor: pointer
+  }
+  .dk-qf-pkg-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0
+  }
+  .dk-qf-pkg-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #0f172a
+  }
+  .dk-qf-pkg-meta {
+    font-size: 11px;
+    color: #94a3b8
+  }
+  .dk-qf-pkg-price {
+    flex: 0 0 auto;
+    font-size: 13px;
+    font-weight: 700;
+    color: #009dff
+  }
+  .dk-qf-pkg-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 8px;
+    padding: 12px;
+    border: 1px dashed #cfe6fb;
+    border-radius: 10px;
+    background: #fbfdff
+  }
+  .dk-qf-pkg-fields[hidden] {
+    display: none
+  }
+  .dk-qf-pf-label {
+    display: block;
+    margin: 0 0 4px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    color: #64748b;
+    text-transform: uppercase
+  }
+  .dk-page .dk-qf-pf-input {
+    width: 100%;
+    height: 44px;
+    padding: 0 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 13.5px;
+    font-family: inherit;
+    color: #0f172a;
+    margin: 0;
+    outline: none
+  }
+  .dk-page .dk-qf-pf-input:focus {
+    border-color: #009dff;
+    box-shadow: 0 0 0 3px rgba(0, 157, 255, .12)
+  }
+  .dk-page .dk-qf-pf-input.error {
+    border-color: #ef4444
+  }
+  .dk-page input[type="file"].dk-qf-pf-input {
+    height: auto;
+    padding: 9px 10px;
+    font-size: 12px
+  }
+  /* The count belongs to the package once one is picked. */
+  .dk-qf-count-locked .dk-qf-chip {
+    opacity: .45;
+    pointer-events: none
+  }
+
+  /* Optional parcel photo add-on */
+  .dk-qf-photo {
+    margin-top: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+  }
+  .dk-qf-photo-head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    padding: 7px 10px;
+    cursor: pointer;
+  }
+  .dk-qf-photo-check {
+    width: 15px;
+    height: 15px;
+    flex: 0 0 auto;
+    accent-color: #009dff;
+    margin: 0;
+    cursor: pointer;
+  }
+  .dk-qf-photo-title {
+    flex: 1 1 auto;
+    font-size: 12px;
+    line-height: 1.25;
+    color: #0f172a;
+    font-weight: 600;
+  }
+  .dk-qf-photo-opt { font-weight: 400; color: #94a3b8; }
+  .dk-qf-photo-rate {
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 700;
+    color: #009dff;
+  }
+  .dk-qf-photo-rate small { font-size: 9px; font-weight: 600; }
+  .dk-qf-photo-body {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 0 10px 7px;
+  }
+  .dk-qf-photo-file { flex: 1 1 150px; min-width: 0; font-size: 11px; color: #475569; }
+  .dk-qf-photo-file::file-selector-button {
+    padding: 3px 8px;
+    margin-right: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #f7f8fa;
+    color: #475569;
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .dk-qf-photo-hint { flex: 0 0 auto; margin: 0; font-size: 10px; color: #94a3b8; }
+
+  .dk-qf-error {
+    display: none;
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: #ef4444
+  }
+
+  .dk-qf-error.show {
+    display: block
+  }
+
+  .dk-qf-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px dashed #e2e8f0
+  }
+
+  .dk-qf-total-label {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500
+  }
+
+  .dk-qf-total-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a
+  }
+
+  .dk-qf-donate {
+    width: 100%;
+    margin-top: 14px;
+    height: 52px;
+    border: none;
+    border-radius: 10px;
+    background: #009dff;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s, box-shadow .2s, transform .15s
+  }
+
+  .dk-qf-donate:hover {
+    background: #0083d6;
+    box-shadow: 0 6px 20px rgba(0, 157, 255, .32)
+  }
+
+  .dk-qf-donate:active {
+    transform: translateY(1px)
+  }
+
+  .dk-qf-donate:disabled {
+    background: #b8d9f5;
+    cursor: not-allowed
+  }
+
+  /* ── Sign in (Google / Phone OTP), same pair the package form offers ── */
+  .dk-qf-or {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 0 10px
+  }
+
+  .dk-qf-or-line {
+    flex: 1;
+    height: 1px;
+    background: #e2e8f0
+  }
+
+  .dk-qf-or-text {
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: .5px
+  }
+
+  .dk-qf-auth-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px
+  }
+
+  .dk-qf-auth-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    height: 46px;
+    padding: 0 8px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #0f172a;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color .2s, background .2s, box-shadow .2s
+  }
+
+  .dk-qf-auth-btn span {
+    overflow: hidden;
+    text-overflow: ellipsis
+  }
+
+  .dk-qf-auth-btn img,
+  .dk-qf-auth-btn svg {
+    flex: 0 0 auto
+  }
+
+  .dk-qf-auth-btn:hover {
+    border-color: #009dff;
+    box-shadow: 0 2px 10px rgba(0, 157, 255, .14);
+    color: #0f172a
+  }
+
+  .dk-qf-otp-btn {
+    background: #f0f8ff;
+    color: #0f7ae0
+  }
+
+  .dk-qf-otp-btn:hover {
+    color: #0f7ae0
+  }
+
+  .dk-qf-signed-in {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 10px 12px;
+    border: 1px solid #bbf7d0;
+    background: #f0fdf4;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #15803d
+  }
+
+  .dk-qf-signed-in-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e
+  }
+
+  /* Trust row */
+  .dk-trust {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 18px
+  }
+
+  .dk-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 10px;
+    background: #f7f8fa;
+    border: 1px solid #f0f0f0
+  }
+
+  .dk-trust-icon {
+    font-size: 22px;
+    flex-shrink: 0
+  }
+
+  .dk-trust-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.5
+  }
+
+  .dk-trust-sub {
+    font-size: 11.5px;
+    color: #888;
+    line-height: 1.35
+  }
+
+  /* What is given card */
+  .dk-what-card {
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 12px;
+    background: #fafbfc;
+    border: 1px solid #f0f0f0;
+    display: flex;
+    gap: 16px;
+    align-items: center
+  }
+
+  .dk-what-text {
+    flex: 1;
+    min-width: 0
+  }
+
+  .dk-what-card h5 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 4px
+  }
+
+  .dk-what-card p {
+    font-size: 12.5px;
+    color: #666;
+    margin: 0;
+    line-height: 1.5
+  }
+
+  .dk-what-media {
+    flex: 0 0 190px
+  }
+
+  .dk-what-media img {
+    width: 190px;
+    height: 190px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #eef2f7;
+    display: block
+  }
+
+  /* ── Description + Video ── */
+  .dk-body {
+    margin-top: 48px
+  }
+
+  .dk-section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+    margin-bottom: 36px
+  }
+
+  .dk-desc-video {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start
+  }
+
+  .dk-desc-video.no-video {
+    grid-template-columns: 1fr
+  }
+
+  .dk-tagline {
+    font-size: 13px;
+    font-weight: 700;
+    color: #009dff;
+    margin: 0 0 6px;
+    letter-spacing: .5px;
+    text-transform: uppercase
+  }
+
+  .dk-section-heading {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin: 0 0 16px;
+    line-height: 1.3
+  }
+
+  .dk-description {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #555
+  }
+
+  .dk-description a {
+    color: #009dff;
+    font-weight: 600
+  }
+
+  .dk-video-wrap {
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, .1)
+  }
+
+  .dk-video-wrap video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    min-height: 320px
+  }
+
+  .dk-video-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, .2);
+    transition: background .2s
+  }
+
+  .dk-video-wrap:hover .dk-video-play {
+    background: rgba(0, 0, 0, .35)
+  }
+
+  .dk-video-play i {
+    font-size: 56px;
+    color: #fff;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .4))
+  }
+
+  /* ── Gallery grid ── */
+  .dk-gallery {
+    margin-top: 48px
+  }
+
+  .dk-gallery-heading {
+    font-size: 13px;
+    font-weight: 700;
+    color: #009dff;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin: 0 0 6px
+  }
+
+  .dk-gallery-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin: 0 0 20px
+  }
+
+  .dk-page .ig-ct {
+    transition: transform .2s, box-shadow .2s
+  }
+
+  .dk-page .ig-ct:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12)
+  }
+
+
+  /* ── Activity videos ── */
+  .dk-activity {
+    margin-top: 48px
+  }
+
+  .dk-activity .activity-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 16px
+  }
+
+  .dk-activity .activity-video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px
+  }
+
+  /* ── Second CTA row ── */
+  .dk-cta-row {
+    margin-top: 48px;
+    text-align: center
+  }
+
+  .dk-cta-row .dk-cta {
+    max-width: 420px;
+    display: inline-block;
+    padding: 18px 48px;
+    font-size: 18px
+  }

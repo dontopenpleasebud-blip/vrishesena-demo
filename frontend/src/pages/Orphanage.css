@@ -1,0 +1,635 @@
+/* Orphanage Page Styles */
+.orphanage-page-container {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.uicon {
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .orph-page {
+    display: none !important;
+  }
+}
+
+.full-container {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .full-container {
+    display: block;
+  }
+}
+
+/* ============================================================
+   1. GLOBAL THEME & VARIABLES
+   ============================================================ */
+.orph-page {
+  --orph-red: #009dff;
+  --orph-red-dark: #0081d6;
+  --orph-warm: #fffaf3;
+  --orph-warm-2: #fff4e3;
+  --orph-ink: #1e293b;
+  --orph-ink-muted: #64748b;
+  --orph-line: #f1ede4;
+  --orph-card-border: #f0eade;
+  --orph-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+  --orph-shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --orph-shadow-lg: 0 20px 40px -15px rgba(15, 23, 42, 0.12);
+  --orph-radius-sm: 10px;
+  --orph-radius-md: 16px;
+  --orph-radius-lg: 24px;
+  --orph-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --orph-font-display: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  font-family: var(--orph-font-sans);
+  color: var(--orph-ink);
+  background-color: #fbfbf9;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Base utility wrapper */
+.orph-page .orph-wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+@media (max-width: 640px) {
+  .orph-page .orph-wrap {
+    padding: 0 16px;
+  }
+}
+
+/* ============================================================
+   2. HERO SECTION
+   ============================================================ */
+.orph-page .orph-hero {
+  position: relative;
+  padding: 60px 0 40px;
+  background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
+  border-bottom: 1px solid var(--orph-line);
+}
+
+.orph-page .orph-hero-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 48px;
+  align-items: center;
+}
+
+@media (max-width: 960px) {
+  .orph-page .orph-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
+
+.orph-page .orph-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(0, 157, 255, 0.08);
+  border: 1px solid rgba(0, 157, 255, 0.2);
+  color: #0081d6;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 18px;
+}
+
+.orph-page .orph-pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #009dff;
+  box-shadow: 0 0 0 3px rgba(0, 157, 255, 0.25);
+  animation: orphPulse 2s infinite;
+}
+
+@keyframes orphPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+}
+
+.orph-page .orph-hero h1 {
+  font-family: var(--orph-font-display);
+  font-size: clamp(32px, 4.2vw, 48px);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--orph-ink);
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+.orph-page .orph-hero h1 span.highlight {
+  color: #009dff;
+  position: relative;
+  display: inline-block;
+}
+
+.orph-page .orph-hero-lead {
+  font-size: clamp(15px, 1.8vw, 17px);
+  line-height: 1.6;
+  color: var(--orph-ink-muted);
+  margin-bottom: 28px;
+  max-width: 560px;
+}
+
+.orph-page .orph-hero-trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-top: 20px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.orph-page .orph-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.orph-page .orph-trust-item i {
+  color: #10b981;
+  font-size: 16px;
+}
+
+/* Hero Carousel */
+.orph-page .orph-hero-card {
+  position: relative;
+  border-radius: var(--orph-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--orph-shadow-lg);
+  background: #000;
+  aspect-ratio: 4 / 3;
+}
+
+.orph-page .orph-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.orph-page .orph-slide.active {
+  opacity: 1;
+}
+
+.orph-page .orph-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.orph-page .orph-slide-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  color: #fff;
+}
+
+.orph-page .orph-slide-overlay h4 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.orph-page .orph-slide-overlay p {
+  font-size: 13px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* ============================================================
+   3. IMPACT COUNTER BAR
+   ============================================================ */
+.orph-page .orph-impact-bar {
+  background: #ffffff;
+  border-bottom: 1px solid var(--orph-line);
+  padding: 24px 0;
+}
+
+.orph-page .orph-impact-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .orph-page .orph-impact-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+.orph-page .orph-stat h3 {
+  font-family: var(--orph-font-display);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 800;
+  color: #009dff;
+  margin-bottom: 4px;
+}
+
+.orph-page .orph-stat p {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--orph-ink-muted);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   4. FILTER & SEARCH CONTROLS
+   ============================================================ */
+.orph-page .orph-controls-sec {
+  padding: 36px 0 16px;
+}
+
+.orph-page .orph-controls-flex {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.orph-page .orph-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.orph-page .orph-chip {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.orph-page .orph-chip:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.orph-page .orph-chip.active {
+  background: #009dff;
+  border-color: #009dff;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 157, 255, 0.3);
+}
+
+.orph-page .orph-search-box {
+  position: relative;
+  min-width: 260px;
+}
+
+@media (max-width: 640px) {
+  .orph-page .orph-search-box {
+    width: 100%;
+  }
+}
+
+.orph-page .orph-search-box i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 16px;
+}
+
+.orph-page .orph-search-box input {
+  width: 100%;
+  padding: 9px 16px 9px 38px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.orph-page .orph-search-box input:focus {
+  border-color: #009dff;
+  box-shadow: 0 0 0 3px rgba(0, 157, 255, 0.15);
+}
+
+.orph-page .orph-count-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--orph-ink-muted);
+}
+
+/* ============================================================
+   5. ORPHANAGE GRID & CARDS
+   ============================================================ */
+.orph-page .orph-grid-sec {
+  padding-bottom: 60px;
+}
+
+.orph-page .orph-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 28px;
+}
+
+@media (max-width: 480px) {
+  .orph-page .orph-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.orph-page .orph-card {
+  background: #ffffff;
+  border-radius: var(--orph-radius-md);
+  border: 1px solid var(--orph-card-border);
+  box-shadow: var(--orph-shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+}
+
+.orph-page .orph-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--orph-shadow-md);
+  border-color: #e2d9cc;
+}
+
+.orph-page .orph-card-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.orph-page .orph-card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.orph-page .orph-card:hover .orph-card-img-wrap img {
+  transform: scale(1.04);
+}
+
+.orph-page .orph-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.orph-page .orph-tag.elderly {
+  background: rgba(217, 119, 6, 0.85);
+}
+
+.orph-page .orph-tag.children {
+  background: rgba(16, 185, 129, 0.85);
+}
+
+.orph-page .orph-tag.mental {
+  background: rgba(139, 92, 246, 0.85);
+}
+
+.orph-page .orph-card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.orph-page .orph-card-loc {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--orph-ink-muted);
+  margin-bottom: 6px;
+}
+
+.orph-page .orph-card-loc i {
+  color: #009dff;
+}
+
+.orph-page .orph-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--orph-ink);
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.orph-page .orph-card-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #64748b;
+  margin-bottom: 16px;
+  flex-grow: 1;
+}
+
+.orph-page .orph-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+  margin-bottom: 16px;
+}
+
+.orph-page .orph-meta-item {
+  font-size: 12px;
+  color: #475569;
+}
+
+.orph-page .orph-meta-item strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--orph-ink);
+}
+
+.orph-page .orph-card-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px;
+  border-radius: var(--orph-radius-sm);
+  background: #009dff;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 157, 255, 0.2);
+}
+
+.orph-page .orph-card-btn:hover {
+  background: #0081d6;
+  color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 157, 255, 0.3);
+}
+
+.orph-page .orph-no-match {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 48px 24px;
+  background: #ffffff;
+  border-radius: var(--orph-radius-md);
+  border: 1px dashed #cbd5e1;
+}
+
+.orph-page .orph-no-match i {
+  font-size: 36px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+}
+
+.orph-page .orph-no-match h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.orph-page .orph-no-match p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Reveal on scroll */
+.orph-page .orph-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.orph-page .orph-reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   MOBILE CONTAINER STYLES (MATCHING ORIGINAL DESIGN 1:1)
+   ============================================================ */
+.full-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 12px 14px;
+}
+
+.recommendations {
+  padding: 16px 0;
+  width: 100%;
+}
+
+.recommendations h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  padding-left: 4px;
+  color: #212529;
+}
+
+.hotel-results {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hotel-vertical-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.hotel-vertical-card .hotel-image-container {
+  position: relative;
+  width: 100%;
+  height: 180px;
+}
+
+.hotel-vertical-card .hotel-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hotel-vertical-card .hotel-content {
+  padding: 14px;
+}
+
+.hotel-vertical-card .hotel-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.hotel-vertical-card .hotel-location {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.hotel-vertical-card .book-btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: #009dff;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+}

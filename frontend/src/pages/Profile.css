@@ -1,0 +1,915 @@
+
+    /* ==========================
+       DONOR SIGN-IN PAGE STYLES
+       ========================== */
+
+    /* intlTelInput styles for donor login */
+    .iti {
+        width: 100%;
+    }
+    .iti__flag-container {
+        z-index: 1060;
+        z-index: 1;
+    }
+    .iti__country-list {
+        z-index: 999;
+        max-height: 200px;
+    }
+    .iti--separate-dial-code .iti__selected-flag {
+        background-color: #f8f9fa;
+        border-right: 1px solid #e0e0e0;
+        border-radius: 12px 0 0 12px;
+    }
+
+    /* Login type toggle styles */
+    .login_type_toggle {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 16px;
+    }
+    .login_type_toggle .form-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .login_type_toggle .form-check-input {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+    .login_type_toggle .form-check-input:checked {
+        background-color: #009dff;
+        border-color: #009dff;
+    }
+    .login_type_toggle .form-check-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+        cursor: pointer;
+    }
+
+
+
+    .donor_signin_section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 80px);
+    }
+
+    .signin_container {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 40px 24px;
+        max-width: 440px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        margin-top: 80px;
+        margin-bottom: 80px;
+    }
+
+    /* Fix phone input spacing - intlTelInput wrapper eats margin */
+    #phoneInputContainer {
+        margin-bottom: 20px;
+    }
+    #emailInputContainer {
+        margin-bottom: 20px;
+    }
+    #phoneInputContainer .contact_input,
+    #emailInputContainer .contact_input {
+        margin-bottom: 0;
+    }
+
+    /* Header Section */
+    .signin_header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .signin_icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #009dff 0%, #4db8ff 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 36px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(0, 157, 255, 0.7);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 10px rgba(0, 157, 255, 0);
+        }
+    }
+
+    .signin_title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+    }
+
+    .signin_subtitle {
+        font-size: 15px;
+        color: #666;
+        line-height: 1.5;
+    }
+
+    /* Alert Messages */
+    .alert_box {
+        padding: 14px 16px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 14px;
+        line-height: 1.5;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .alert_success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert_error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .alert_icon {
+        font-size: 20px;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    /* Google Sign-In Button */
+    .google_signin_button {
+        width: 100%;
+        background: #ffffff;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        margin-bottom: 24px;
+    }
+
+    .google_signin_button:hover {
+        background: #f8f9fa;
+        border-color: #009dff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 157, 255, 0.25);
+        color: #1a1a1a;
+        text-decoration: none;
+    }
+
+    .google_signin_button:active {
+        transform: translateY(0);
+    }
+
+    .google_icon_img {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Divider Section */
+    .divider_section {
+        display: flex;
+        align-items: center;
+        margin: 24px 0;
+        gap: 16px;
+    }
+
+    .divider_line {
+        flex: 1;
+        height: 1px;
+        background: #e0e0e0;
+    }
+
+    .divider_text {
+        color: #999;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    /* OTP Section */
+    .otp_section_title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+        text-align: left;
+    }
+
+    .contact_input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 15px;
+        transition: all 0.3s;
+        margin-bottom: 16px;
+    }
+
+    .contact_input:focus {
+        outline: none;
+        border-color: #009dff;
+        box-shadow: 0 0 0 3px rgba(0, 157, 255, 0.15);
+    }
+
+    .contact_input.error {
+        border-color: #dc3545;
+    }
+
+    .send_otp_btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #009dff 0%, #4db8ff 100%);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .send_otp_btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 157, 255, 0.3);
+    }
+
+    .send_otp_btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* OTP Verification Modal */
+    .otp_modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .otp_modal.active {
+        display: flex;
+    }
+
+    .otp_modal_content {
+        background: white;
+        border-radius: 20px;
+        padding: 32px 24px;
+        max-width: 400px;
+        width: 100%;
+        position: relative;
+        animation: modalSlideUp 0.3s ease;
+        z-index: 99999;
+    }
+
+    @keyframes modalSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .otp_modal_close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+        transition: color 0.3s;
+    }
+
+    .otp_modal_close:hover {
+        color: #333;
+    }
+
+    .otp_modal_title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    .otp_modal_subtitle {
+        font-size: 14px;
+        color: #666;
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    /* OTP Input Field */
+    .otp_input_field {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 18px;
+        text-align: center;
+        letter-spacing: 4px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        transition: all 0.3s;
+    }
+
+    .otp_input_field:focus {
+        outline: none;
+        border-color: #009dff;
+        box-shadow: 0 0 0 3px rgba(0, 157, 255, 0.15);
+    }
+
+    .otp_input_field.error {
+        border-color: #dc3545;
+        animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
+    }
+
+    /* Resend OTP Section - FIXED */
+    .resend_otp_section {
+        text-align: center;
+        margin: 16px 0;
+        font-size: 14px;
+        color: #666;
+        position: relative;
+        z-index: 10;
+    }
+
+    .resend_otp_section p {
+        position: relative;
+        z-index: 2;
+        pointer-events: auto;
+    }
+
+    .resend_otp_link {
+        color: #009dff;
+        text-decoration: none;
+        font-weight: 600;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        font-size: inherit;
+        position: relative;
+        z-index: 15;
+        transition: all 0.3s ease;
+    }
+
+    .resend_otp_link:hover:not(.disabled) {
+        text-decoration: underline;
+        color: #4db8ff;
+    }
+
+    .resend_otp_link.disabled {
+        color: #999 !important;
+        cursor: not-allowed !important;
+        text-decoration: none !important;
+        pointer-events: none !important;
+        opacity: 0.5 !important;
+    }
+
+    /* Verify Button */
+    .verify_otp_btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #009dff 0%, #4db8ff 100%);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .verify_otp_btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 157, 255, 0.3);
+    }
+
+    .verify_otp_btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Loading Spinner */
+    .loading_spinner {
+        display: none;
+        text-align: center;
+        margin: 16px 0;
+    }
+
+    .loading_spinner.active {
+        display: block;
+    }
+
+    .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #009dff;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Need Help Section */
+    .need_help {
+        text-align: center;
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .need_help_title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 12px;
+    }
+
+    .contact_links {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .contact_link {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #009dff;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .contact_link:hover {
+        color: #4db8ff;
+        text-decoration: underline;
+    }
+
+    /* ================================
+       SPLIT LAYOUT - DESKTOP ONLY
+       ================================ */
+    .donor_login_wrapper {
+        display: flex;
+        min-height: 100vh;
+        width: 100%;
+    }
+
+    /* Left side - Org content (hidden on mobile) */
+    .donor_login_left {
+        display: none;
+    }
+
+    @media (min-width: 992px) {
+        .donor_login_wrapper {
+            align-items: stretch;
+        }
+
+        .donor_login_left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+            background: linear-gradient(160deg, #f0f8ff 0%, #e6f3ff 40%, #d9edff 100%);
+            padding: 60px 56px;
+            color: #1a1a1a;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .donor_login_left::before {
+            content: '';
+            position: absolute;
+            top: -120px;
+            right: -80px;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(0, 157, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .donor_login_left::after {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            left: -60px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0, 157, 255, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .donor_login_right {
+            flex: 0 0 520px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            padding: 48px 40px;
+            position: relative;
+        }
+
+        /* Subtle left border accent to connect panels */
+        .donor_login_right::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 15%;
+            bottom: 15%;
+            width: 3px;
+            background: linear-gradient(180deg, transparent, #009dff, #0080d4, transparent);
+            border-radius: 2px;
+        }
+
+        .donor_login_right .signin_container {
+            margin-top: 0;
+            margin-bottom: 0;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
+            border: 1px solid #eee;
+            max-width: 420px;
+        }
+
+        .donor_login_right .signin_icon {
+            width: 64px;
+            height: 64px;
+            font-size: 28px;
+        }
+
+        .donor_login_right .signin_title {
+            font-size: 24px;
+        }
+
+        .donor_login_right .signin_subtitle {
+            font-size: 13px;
+        }
+
+        .donor_login_right .signin_header {
+            margin-bottom: 24px;
+        }
+
+        .donor_login_right .google_signin_button {
+            padding: 13px 18px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .donor_login_right .divider_section {
+            margin: 16px 0;
+        }
+
+        .donor_login_right .otp_section_title {
+            font-size: 14px;
+        }
+
+        .donor_login_right .contact_input {
+            padding: 12px 14px;
+            font-size: 14px;
+        }
+
+        .donor_login_right .send_otp_btn {
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .donor_login_right .login_type_toggle .form-check-label {
+            font-size: 13px;
+        }
+
+        .donor_login_right .need_help {
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+
+        /* Hide the section wrapper default centering on desktop */
+        .donor_signin_section {
+            display: contents;
+            margin-top: 0 !important;
+        }
+
+        /* Remove mt-7 on desktop */
+        .donor_signin_section.mt-7 {
+            margin-top: 0 !important;
+        }
+    }
+
+    /* Left panel content styles */
+    .org_brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 44px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .org_brand_icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #009dff 0%, #4db8ff 100%);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        box-shadow: 0 4px 15px rgba(0, 157, 255, 0.3);
+    }
+
+    .org_brand_name {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        color: #1a1a1a;
+        margin: 0;
+    }
+
+    .org_brand_tagline {
+        font-size: 12px;
+        color: #888;
+        margin: 2px 0 0 0;
+        letter-spacing: 0.5px;
+    }
+
+    .org_headline {
+        font-size: 34px;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: 18px;
+        color: #1a1a1a;
+        position: relative;
+        z-index: 1;
+    }
+
+    .org_headline span {
+        background: linear-gradient(135deg, #009dff, #4db8ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .org_description {
+        font-size: 14.5px;
+        line-height: 1.75;
+        color: #555;
+        margin-bottom: 32px;
+        position: relative;
+        z-index: 1;
+        max-width: 520px;
+    }
+
+    /* Impact stats grid */
+    .org_stats_grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 32px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .org_stat_card {
+        background: rgba(255,255,255,0.7);
+        border: 1px solid rgba(0,0,0,0.06);
+        border-radius: 14px;
+        padding: 18px 16px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s, background 0.3s, border-color 0.3s;
+    }
+
+    .org_stat_card:hover {
+        transform: translateY(-2px);
+        background: rgba(255,255,255,0.9);
+        border-color: rgba(0, 157, 255, 0.2);
+    }
+
+    .org_stat_icon {
+        font-size: 22px;
+        margin-bottom: 6px;
+        display: block;
+        color: #009dff;
+    }
+
+    .org_stat_value {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1a1a1a;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .org_stat_label {
+        font-size: 11px;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 600;
+    }
+
+    /* Vision quote */
+    .org_vision_block {
+        background: rgba(255,255,255,0.6);
+        border-left: 3px solid #009dff;
+        border-radius: 0 12px 12px 0;
+        padding: 16px 20px;
+        margin-bottom: 28px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .org_vision_block p {
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: #666;
+        margin: 0;
+        font-style: italic;
+    }
+
+    .org_vision_label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #009dff;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* Corporate partners */
+    .org_partners {
+        position: relative;
+        z-index: 1;
+    }
+
+    .org_partners_label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #999;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .org_partners_logos {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .org_partner_badge {
+        background: rgba(255,255,255,0.7);
+        border: 1px solid rgba(0,0,0,0.08);
+        border-radius: 8px;
+        padding: 5px 12px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #666;
+        transition: all 0.3s;
+    }
+
+    .org_partner_badge:hover {
+        background: #fff;
+        color: #1a1a1a;
+        border-color: rgba(0, 157, 255, 0.3);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 480px) {
+        .signin_container {
+            padding: 32px 20px;
+        }
+
+        .signin_title {
+            font-size: 24px;
+        }
+
+        .google_signin_button {
+            font-size: 15px;
+            padding: 14px 18px;
+        }
+
+        .otp_modal_content {
+            padding: 24px 20px;
+        }
+    }
+
+
+
+.resend_otp_section {
+    text-align: center;
+    margin: 16px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.resend_otp_link {
+    color: #009dff;
+    font-weight: 600;
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.resend_otp_link:hover:not(:disabled) {
+    text-decoration: underline;
+    color: #4db8ff;
+    background-color: rgba(0, 157, 255, 0.1);
+    border-radius: 4px;
+}
+
+.resend_otp_link:disabled {
+    color: #999 !important;
+    cursor: not-allowed !important;
+    opacity: 0.5 !important;
+    pointer-events: none !important;
+}
+
+#resendTimerDisplay {
+    margin-left: 8px;
+    color: #999;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+
+/* Ensure Profile / Donor Sign-in Page respects theme background and shadows */
+.donor_signin_section {
+    background-color: #fffaf3 !important;
+    position: relative;
+    z-index: 5;
+}
+.signin_container {
+    background-color: #ffffff !important;
+}

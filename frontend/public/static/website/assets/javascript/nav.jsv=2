@@ -1,0 +1,350 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const otpForm = document.getElementById('otpValidationForm');
+    const otpInput = document.getElementById('otpInput');
+    const submitButton = document.getElementById('submitOtpButton');
+    const loadingSpinner = document.getElementById('otpLoadingSpinner');
+    const statusMessage = document.getElementById('otpStatusMessage');
+    const resendLink = document.getElementById('resendOtpLink');
+    const csrfTokenEl = document.querySelector('[name=csrfmiddlewaretoken]');
+
+    // Exit early if OTP form elements don't exist on this page
+    if (!otpForm || !otpInput || !csrfTokenEl) {
+        return;
+    }
+
+    const csrfToken = csrfTokenEl.value;
+
+    // Function to show status message
+    function showStatus(message, type) {
+        if (!statusMessage) return;
+        statusMessage.textContent = message;
+        statusMessage.className = `alert alert-${type}`;
+        statusMessage.style.display = 'block';
+    }
+
+    // Function to validate input (phone number or email)
+    function validateContactInfo(input) {
+        // More comprehensive phone regex that handles international formats
+        const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (phoneRegex.test(input)) {
+            return { isValid: true, type: 'phone' };
+        } else if (emailRegex.test(input)) {
+            return { isValid: true, type: 'email' };
+        }
+        return { isValid: false };
+    }
+
+    // Function to show/hide loading state
+    function setLoading(isLoading) {
+        if (loadingSpinner) loadingSpinner.style.display = isLoading ? 'block' : 'none';
+        if (submitButton) submitButton.disabled = isLoading;
+        if (otpInput) otpInput.disabled = isLoading;
+        if (resendLink) resendLink.style.visibility = isLoading ? 'hidden' : 'visible';
+    }
+
+    // Handle initial form submission (phone number or email)
+    const trackDonationForm = document.getElementById('trackDonationForm');
+    if (!trackDonationForm) return;
+
+    trackDonationForm.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    setLoading(true);
+
+    try {
+        const contactInfo = document.getElementById('contactinfo').value.trim();
+        const validation = validateContactInfo(contactInfo);
+
+        if (!validation.isValid) {
+            showStatus('Please enter a valid phone number or email address.', 'danger');
+            return;
+        }
+
+        const response = await fetch('/generate-otp/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ contactinfo: contactInfo, type: validation.type })
+        });
+
+        let data;
+        try {
+            data = await response.json();
+        } catch (e) {
+            // If JSON parsing fails but OTP was sent, continue with the flow
+            bootstrap.Modal.getInstance(document.getElementById('trackDonationModal'))?.hide();
+            new bootstrap.Modal(document.getElementById('donationDetailsModal')).show();
+            return;
+        }
+
+        if (response.status === 429) {
+            bootstrap.Modal.getInstance(document.getElementById('trackDonationModal'))?.hide();
+            new bootstrap.Modal(document.getElementById('dailyLimitModal')).show();
+            return;
+        }
+
+        // Show OTP modal even if there's a 500 error but OTP was sent
+        bootstrap.Modal.getInstance(document.getElementById('trackDonationModal'))?.hide();
+        new bootstrap.Modal(document.getElementById('donationDetailsModal')).show();
+
+    } catch (error) {
+        if (error.message.includes('500')) {
+            // If it's a 500 error but OTP was sent, show the modal
+            bootstrap.Modal.getInstance(document.getElementById('trackDonationModal'))?.hide();
+            new bootstrap.Modal(document.getElementById('donationDetailsModal')).show();
+        } else {
+            showStatus('An error occurred. Please try again.', 'danger');
+        }
+    } finally {
+        setLoading(false);
+    }
+});
+
+
+    // Handle OTP form submission
+    otpForm.addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    if (!otpInput.value) {
+        otpInput.classList.add('is-invalid');
+        showStatus('Please enter the OTP.', 'danger');
+        return;
+    }
+
+    setLoading(true);
+    statusMessage.style.display = 'none';
+
+    const contactInfo = document.getElementById('contactinfo').value.trim();
+
+    try {
+        const response = await fetch('/validate-otp/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                contactinfo: contactInfo,
+                otp: otpInput.value
+            })
+        });
+
+// <!--        console.log('Response status:', response.status); // Debugging log-->
+
+        // Try to parse JSON response
+        let data;
+        try {
+            data = await response.json();
+// <!--            console.log('Response data:', data); // Debugging log-->
+        } catch (jsonError) {
+// <!--            console.error('Failed to parse JSON:', jsonError);-->
+            showStatus('Invalid response from the server. Please try again later.', 'danger');
+            return;
+        }
+
+        if (response.ok) {
+            if (data.success) {
+                showStatus('OTP verified successfully! Redirecting...', 'success');
+                setTimeout(() => {
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    }
+                }, 1500);
+            } else {
+                // Handle invalid OTP
+                const message = data.message || 'Invalid OTP. Please try again.';
+                const remainingAttempts = data.remaining_attempts !== undefined
+                    ? ` ${data.remaining_attempts} attempts remaining.`
+                    : '';
+
+                showStatus(`${message}${remainingAttempts}`, 'danger');
+                otpInput.value = ''; // Clear input field
+                otpInput.focus();
+            }
+        } else {
+            // Handle server error with proper message
+            const errorMessage = data.message || 'An unexpected error occurred.';
+// <!--            console.error('Server error:', errorMessage);-->
+            showStatus(errorMessage, 'danger');
+        }
+    } catch (error) {
+        // Handle network errors or unexpected fetch issues
+// <!--        console.error('Network or unexpected error:', error);-->
+        showStatus('A network error occurred. Please check your connection and try again.', 'danger');
+    } finally {
+        setLoading(false);
+    }
+});
+
+
+    // Handle resend OTP
+    let resendAttempts = 0;
+    const maxResendAttempts = 5;
+
+    if (!resendLink) return;
+
+    resendLink.addEventListener('click', async function (event) {
+        event.preventDefault();
+
+        if (resendAttempts >= maxResendAttempts) {
+            showStatus('Maximum resend attempts reached.', 'danger');
+            return;
+        }
+
+        const contactInfo = document.getElementById('contactinfo').value.trim();
+        const validation = validateContactInfo(contactInfo);
+
+        if (!validation.isValid) {
+            showStatus('Please enter a valid phone number or email address.', 'danger');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await fetch('/generate-otp/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ contactinfo: contactInfo, type: validation.type })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                resendAttempts++;
+                showStatus('OTP resent successfully!', 'success');
+                otpInput.value = '';
+            } else {
+                showStatus(data.message || 'Failed to resend OTP.', 'danger');
+            }
+        } catch (error) {
+            showStatus('Failed to resend OTP. Please try again.', 'danger');
+        } finally {
+            setLoading(false);
+        }
+    });
+
+    // Clear status when modal is hidden
+    const modal = document.getElementById('donationDetailsModal');
+    if (modal) {
+        modal.addEventListener('hidden.bs.modal', function () {
+            if (statusMessage) statusMessage.style.display = 'none';
+            if (otpInput) otpInput.value = '';
+            setLoading(false);
+        });
+    }
+
+    // Remove invalid class on input
+    if (otpInput && typeof otpInput.addEventListener === 'function') {
+        otpInput.addEventListener('input', function () {
+            this.classList.remove('is-invalid');
+        });
+    }
+});
+
+
+
+
+
+
+
+
+// remove "." and "₹"
+document.addEventListener("DOMContentLoaded", function () {
+  function handleAmountSelection(amountSelector, inputSelector, activeClass) {
+    const amounts = document.querySelectorAll(amountSelector);
+    const donationInput = document.querySelector(inputSelector);
+
+    amounts.forEach(amount => {
+      amount.addEventListener("click", function () {
+        // Get the clicked amount and remove the ₹ symbol
+        let selectedAmount = this.textContent.replace("₹", "").trim();
+
+        // Set the input value
+        donationInput.value = selectedAmount;
+
+        // Remove 'active' class from all amount spans
+        amounts.forEach(a => a.classList.remove(activeClass));
+
+        // Add 'active' class to the clicked amount
+        this.classList.add(activeClass);
+      });
+    });
+  }
+
+  // Call function with specific selectors
+  handleAmountSelection(".modal-amount", "#donation-amount", "active");
+  handleAmountSelection(".health-modal-amount", "#healthcare-amount", "active");
+
+});
+
+//plan id and plan name getter
+  document.querySelectorAll('.modal-amount').forEach(item => {
+    item.addEventListener('click', function() {
+      let amount = this.getAttribute('data-amount');
+      let planId = this.getAttribute('data-plan');
+      let planName = this.getAttribute('data-plan-name');
+
+      // Update input fields
+      document.getElementById('donation-amount').value = amount;
+      document.getElementById('plan-id').value = planId;
+      document.getElementById('plan-name').value = planName; // Set the plan name
+    });
+  });
+
+  document.querySelectorAll('.health-modal-amount').forEach(item => {
+    item.addEventListener('click', function() {
+      let amount = this.getAttribute('data-amount');
+      let planId = this.getAttribute('data-plan');
+      let planName = this.getAttribute('data-plan-name');
+
+      // Update input fields
+      document.getElementById('donation-amount').value = amount;
+      document.getElementById('health-plan-id').value = planId;
+      document.getElementById('health-plan-name').value = planName; // Set the plan name
+    });
+  });
+
+
+
+
+    function allowOnlyNumbers(event) {
+    const key = event.key;
+    // Allow only digits
+    if (!/^\d$/.test(key)) {
+      event.preventDefault();
+    }
+  }
+
+
+
+// OTP input validation - only attach if element exists on the page
+(function() {
+    const otpInputEl = document.getElementById('otpInput');
+    if (otpInputEl) {
+        otpInputEl.addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            value = value.slice(0, 6);
+            this.value = value;
+        });
+
+        otpInputEl.addEventListener('keydown', function(e) {
+            if (e.key === 'e' || e.key === '-' || e.key === '+' || e.key === '.') {
+                e.preventDefault();
+            }
+        });
+
+        otpInputEl.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const numericValue = pastedText.replace(/\D/g, '').slice(0, 6);
+            this.value = numericValue;
+        });
+    }
+})();

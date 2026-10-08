@@ -1,0 +1,1452 @@
+/* Thaagam v5 — tiny shared interactions. Deferred; no dependencies. */
+(function () {
+  "use strict";
+
+  function csrf(scope) {
+    var el = (scope || document).querySelector("[name=csrfmiddlewaretoken]");
+    return el ? el.value : "";
+  }
+
+  function showMsg(id, text) {
+    var el = document.getElementById(id);
+    if (el) { el.textContent = text; el.style.display = text ? "block" : "none"; }
+  }
+
+  /* Inline field errors: the message goes directly above the offending field,
+     not into one shared line under the CTA where it is easy to miss. */
+  function clearFieldErrors() {
+    document.querySelectorAll("[data-err-for]").forEach(function (el) {
+      el.textContent = "";
+      el.classList.remove("on");
+    });
+    document.querySelectorAll(".field--err").forEach(function (el) {
+      el.classList.remove("field--err");
+    });
+  }
+
+  function showFieldError(id, text) {
+    var input = document.getElementById(id);
+    var slot = document.querySelector('[data-err-for="' + id + '"]');
+    if (slot) { slot.textContent = text; slot.classList.add("on"); }
+    var box = input && input.closest ? input.closest(".field") : null;
+    if (box) box.classList.add("field--err");
+    if (input && input.scrollIntoView) {
+      try { input.scrollIntoView({ block: "center", behavior: "smooth" }); }
+      catch (e) { input.scrollIntoView(); }
+    }
+  }
+
+  /* Typing clears that field's error, so a corrected field stops looking wrong. */
+  document.addEventListener("input", function (e) {
+    var box = e.target.closest && e.target.closest(".field--err");
+    if (!box) return;
+    box.classList.remove("field--err");
+    var slot = e.target.id && document.querySelector('[data-err-for="' + e.target.id + '"]');
+    if (slot) { slot.textContent = ""; slot.classList.remove("on"); }
+  });
+
+  function postJSON(url, body, scope) {
+    return fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRFToken": csrf(scope) },
+      body: JSON.stringify(body),
+    }).then(function (r) {
+      return r.json().then(function (d) { d._status = r.status; return d; });
+    });
+  }
+
+  var v5Extras = { addons: [], package: "", packageName: "", packagePrice: 0, packageCount: 0, cakeRate: 0, cakeImage: 0, cakeCount: 0, cakeFile: null, addonUnit: 0, serve: [], serveUnit: 0, names: [] };
+  function extrasLabel(names) {
+    if (!names || !names.length) return "Add ons";
+    if (names.length <= 2) return names.join(", ");
+    return names.slice(0, 2).join(", ") + " +" + (names.length - 2) + " more";
+  }
+  var repriceBill = function () {};
+
+  /* Quantity stepper (cause detail). Container: [data-stepper][data-price][data-unit] */
+  var stepper = document.querySelector("[data-stepper]");
+  if (stepper) {
+    var price = parseInt(stepper.dataset.price, 10);
+    var unit = stepper.dataset.unit;
+    /* "amount" mode (nepal_house): the input IS the rupee amount, typed
+       directly - no per-unit multiplication, no +/- buttons, min Rs.1. */
+    var freeAmountMode = stepper.dataset.mode === "amount";
+    var qtyEl = stepper.querySelector("[data-qty]");
+    var subEl = stepper.querySelector("[data-subline]");
+    /* amount mode caps at the cause's own price: a donor cannot pledge more
+       than a whole home costs. */
+    var QTY_MIN = 1, QTY_MAX = freeAmountMode ? (price || 1) : 1000;
+    var qty = parseInt(qtyEl.value, 10) || QTY_MIN;
+
+    var syncTargets = document.querySelectorAll("[data-total]");
+    var addonRow = document.querySelector("[data-addon-row]");
+    var photoRow = document.querySelector("[data-photo-row]");
+    var photoAmt = document.querySelector("[data-photo-row-amt]");
+    var photoLabel = document.querySelector("[data-photo-row-label]");
+    var lineItem = document.querySelector("[data-line-item]");
+    var cakeRow = document.querySelector("[data-cake-row]");
+    var cakeAmt = document.querySelector("[data-cake-row-amt]");
+    var cakeLabel = document.querySelector("[data-cake-row-label]");
+    function render(typing) {
+      stepper.dataset.currentQty = qty;
+      var packed = !!v5Extras.package;
+      /* "cake with image" sets the count like any package, but its parcels
+         are priced at the unit price and each cake (cake + printed image) is a
+         line of its own - the same sum as views._price_cause_donation */
+      var cakeRate = v5Extras.cakeRate || 0;
+      var cakeImage = v5Extras.cakeImage || 0;
+      /* the flag, not the rate: birthday_cake's cake package has a Rs.0 cake */
+      var isCake = !!v5Extras.cakePkg;
+      var replaces = packed && !isCake;
+      /* the package's food_count IS the count, so it is what the donor sees */
+      var shownQty = packed && v5Extras.packageCount ? v5Extras.packageCount : qty;
+      var base = freeAmountMode ? shownQty : (replaces ? v5Extras.packagePrice : shownQty * price);
+      var cakeCount = isCake ? 1 : 0;
+      var cakeExtra = (cakeRate + cakeImage) * cakeCount;
+      /* the serving flags are per parcel too, so they ride in the same
+         "Add ons" line rather than opening a third row for a Rs.5 flag */
+      var addonUnit = v5Extras.addonUnit + v5Extras.serveUnit;
+      var addonExtra = addonUnit * shownQty;
+      /* the parcel photo is priced per parcel like an add-on; the block that
+         owns the checkbox is defined further down, so this reads through a
+         guard rather than assuming it has run yet */
+      var photoUnit = window.v5ParcelPhotoRate ? window.v5ParcelPhotoRate() : 0;
+      /* shownQty is a COUNT of the cause's own unit whether it came from the
+         stepper or from a package - views._package_quote hands over counts,
+         not parcels - so the per-count multiplier always applies. It is 1
+         everywhere except the birthday causes, where one count is 20 parcels
+         and the photo is Rs.100. */
+      var photoParcels = window.v5ParcelPhotoParcels
+        ? window.v5ParcelPhotoParcels(shownQty) : shownQty;
+      var photoExtra = window.v5ParcelPhotoCost ? window.v5ParcelPhotoCost(shownQty)
+                                                : photoUnit * photoParcels;
+      var total = base + cakeExtra + addonExtra + photoExtra;
+
+      if (!typing) qtyEl.value = shownQty;
+      subEl.textContent = freeAmountMode ? ("₹" + total) : (shownQty + " " + unit + " · ₹" + total);
+      var extrasName = extrasLabel(v5Extras.names);
+      syncTargets.forEach(function (el) {
+        el.textContent = el.dataset.total
+          /* a function replacement, not a string: a name is DB text and "$&"
+             or "$1" inside one would otherwise be read as a substitution */
+          .replace("{n}", function () { return extrasName; })
+          .replace("{q}", shownQty)
+          .replace("{b}", "₹" + base)
+          .replace("{au}", "₹" + addonUnit)
+          .replace("{a}", "₹" + addonExtra)
+          .replace("{t}", "₹" + total);
+      });
+      if (packed && lineItem) lineItem.textContent = v5Extras.packageName + " · " + shownQty + " " + unit;
+      if (addonRow) addonRow.hidden = !addonExtra;
+      if (cakeRow) {
+        cakeRow.hidden = !cakeExtra;
+        if (cakeAmt) cakeAmt.textContent = "₹" + cakeExtra;
+        if (cakeLabel) cakeLabel.textContent = cakeRate
+          ? "Cake ₹" + cakeRate + " + image ₹" + cakeImage
+          : "Cake image ₹" + cakeImage;
+      }
+      if (photoRow) {
+        photoRow.hidden = !photoExtra;
+        if (photoAmt) photoAmt.textContent = "₹" + photoExtra;
+        if (photoLabel) {
+          var flat = window.v5ParcelPhotoFlat ? window.v5ParcelPhotoFlat() : 0;
+          /* the cake causes quote the photo as one number (Rs.100 a count),
+             so the row just names it; the amount beside it says the rest */
+          var per = window.v5ParcelPhotoPer ? window.v5ParcelPhotoPer() : 1;
+          photoLabel.textContent = flat
+            ? "Parcel photo (₹" + flat + " + ₹" + photoUnit + " each)"
+            : per > 1 ? "Parcel photo"
+            : "Parcel photo (₹" + photoUnit + " each)";
+        }
+      }
+      stepper.querySelectorAll(".preset").forEach(function (p) {
+        p.classList.toggle("preset--on", !packed && parseInt(p.dataset.value, 10) === qty);
+      });
+
+      /* a package with a food_count fixes the count, so the stepper goes
+         read-only rather than letting a donor "change" a number that no longer
+         drives anything. A package WITHOUT one leaves the count to the donor. */
+      var counted = packed && !!v5Extras.packageCount;
+      stepper.classList.toggle("stepper--locked", counted);
+      qtyEl.disabled = counted;
+      stepper.querySelectorAll("[data-minus],[data-plus],.preset").forEach(function (b) {
+        b.disabled = counted;
+      });
+    }
+    repriceBill = render;
+    window.v5Recalc = render;
+    var minusBtn = stepper.querySelector("[data-minus]");
+    var plusBtn = stepper.querySelector("[data-plus]");
+    if (minusBtn) {
+      minusBtn.addEventListener("click", function () {
+        if (qty > QTY_MIN) { qty -= 1; render(); }
+      });
+    }
+    if (plusBtn) {
+      plusBtn.addEventListener("click", function () {
+        if (qty < QTY_MAX) { qty += 1; render(); }
+      });
+    }
+
+    qtyEl.addEventListener("input", function () {
+      var cleaned = qtyEl.value.replace(/\D/g, "");
+      if (cleaned !== qtyEl.value) {
+        var at = qtyEl.selectionStart - (qtyEl.value.length - cleaned.length);
+        qtyEl.value = cleaned;
+        try { qtyEl.setSelectionRange(at, at); } catch (e) {}
+      }
+      var n = parseInt(cleaned, 10);
+      qtyEl.classList.toggle("is-bad", cleaned !== "" && (n < QTY_MIN || n > QTY_MAX));
+      if (cleaned === "" || isNaN(n)) return;
+      qty = Math.min(Math.max(n, QTY_MIN), QTY_MAX);
+      render(true);
+    });
+
+    function commit() {
+      if (qtyEl.disabled) return;  /* a package owns the count right now */
+      var n = parseInt(qtyEl.value, 10);
+      qty = isNaN(n) ? QTY_MIN : Math.min(Math.max(n, QTY_MIN), QTY_MAX);
+      qtyEl.classList.remove("is-bad");
+      qtyEl.value = qty;
+      render();
+    }
+    qtyEl.addEventListener("blur", commit);
+    qtyEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); qtyEl.blur(); }
+    });
+    qtyEl.addEventListener("focus", function () { qtyEl.select(); });
+    stepper.querySelectorAll(".preset").forEach(function (p) {
+      p.addEventListener("click", function () {
+        qty = parseInt(p.dataset.value, 10); render();
+      });
+    });
+    render();
+  }
+
+
+  var proofEl = document.querySelector("[data-proof-by]");
+  var dateEl = document.getElementById("service-date");
+  if (proofEl && dateEl) {
+    var lastAsked = dateEl.value;
+    var etaTimer = null;
+
+    function refreshEta() {
+      var val = dateEl.value;
+      if (!val || val === lastAsked) return;
+      lastAsked = val;
+      var url = proofEl.dataset.etaUrl + "?slug=" +
+                encodeURIComponent(proofEl.dataset.slug) +
+                "&date=" + encodeURIComponent(val);
+      proofEl.style.opacity = "0.45";
+      fetch(url, { credentials: "same-origin" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          proofEl.style.opacity = "";
+          if (!d || !d.ok || !d.proof_by) return;
+          proofEl.textContent = d.proof_by;
+          /* "in 7 hours" vs "by 12 Sep, 6:00 PM" - the preposition is part of
+             the answer, so it moves with it. */
+          var prepEl = document.querySelector("[data-proof-prep]");
+          if (prepEl && d.proof_prep) prepEl.textContent = d.proof_prep;        })
+        .catch(function () { proofEl.style.opacity = ""; });
+    }
+
+    // change fires on commit; input covers keyboard entry mid-edit
+    dateEl.addEventListener("change", refreshEta);
+    dateEl.addEventListener("input", function () {
+      window.clearTimeout(etaTimer);
+      etaTimer = window.setTimeout(refreshEta, 400);
+    });
+  }
+
+  /* Back buttons: step back through history when the visitor came from this
+     site (the cause page is reachable from more than one deck), otherwise let
+     the href do its job. */
+  document.querySelectorAll("[data-back]").forEach(function (link) {
+    link.addEventListener("click", function (e) {
+      var ref = document.referrer;
+      if (history.length > 1 && ref && ref.indexOf(location.origin + "/") === 0 &&
+          ref.split("#")[0] !== location.href.split("#")[0]) {
+        e.preventDefault();
+        history.back();
+      }
+    });
+  });
+
+  /* Selectable chip rows: [data-chips] makes children exclusive */
+  document.querySelectorAll("[data-chips]").forEach(function (row) {
+    row.querySelectorAll(".chip:not(.chip--dashed)").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        row.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("chip--on"); });
+        chip.classList.add("chip--on");
+      });
+    });
+  });
+
+  /* OTP boxes: auto-advance while typing, backspace to step back. Paste and
+     OS auto-fill are handled in the auto-fill block further down, which owns
+     spreading a whole code across the row and submitting it. */
+  var boxes = document.querySelectorAll(".otp-box");
+  boxes.forEach(function (box, i) {
+    box.addEventListener("input", function () {
+      if (box.value.length === 1 && boxes[i + 1]) boxes[i + 1].focus();
+    });
+    box.addEventListener("keydown", function (e) {
+      if (e.key === "Backspace" && !box.value && boxes[i - 1]) boxes[i - 1].focus();
+    });
+  });
+
+  /* Login: send a real OTP, then show the code step.
+
+     The code boxes are on THIS page (v5_login.html mounts v5_otp_form.html
+     hidden), and they are revealed and focused synchronously inside the
+     submit - which is inside the tap. That is the whole trick: a phone raises
+     its keyboard for focus() only during a user gesture, and the OS's "code
+     from Messages" suggestion lives in that keyboard. Navigating to /otp/
+     dropped the gesture, so autofocus there only drew a focus ring and the
+     donor had to tap the box before any suggestion appeared.
+
+     The URL still becomes /otp/?phone=..., by pushState, so Back returns to
+     the number and a reload lands on the standalone page. */
+  var otpStep = document.getElementById("v5-otp-step");
+  var loginStep = document.getElementById("v5-login-step");
+  var otpStepStart = null;   // set by the OTP block below (resets boxes, runs the cooldown)
+  function showLoginStep() {
+    if (!otpStep || !loginStep) return;
+    otpStep.hidden = true;
+    loginStep.hidden = false;
+    var phoneEl = loginForm && loginForm.querySelector("[name=phone]");
+    if (phoneEl) phoneEl.focus();
+  }
+  function showOtpStep(phone, channel) {
+    loginStep.hidden = true;
+    otpStep.hidden = false;
+    if (otpStepStart) otpStepStart(phone, channel);
+  }
+  var loginForm = document.getElementById("v5-login-form");
+  if (loginForm) {
+    loginForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var sendBtn = loginForm.querySelector("button[type=submit]");
+      /* Enter can submit again while the first request is out - a second OTP */
+      if (sendBtn && sendBtn.getAttribute("aria-busy") === "true") return;
+      var local = loginForm.querySelector("[name=phone]").value.replace(/\D/g, "");
+      var ccEl = loginForm.querySelector("[name=cc]");
+      var cc = ccEl ? ccEl.value : "91";
+      var label = loginForm.querySelector("[data-label]");
+      showMsg("v5-login-msg", "");
+      if (cc === "91" ? local.length !== 10 : (local.length < 6 || local.length > 14)) {
+        showMsg("v5-login-msg", cc === "91" ? "Enter your 10-digit mobile number." : "Enter your mobile number without the country code.");
+        return;
+      }
+      /* An Indian number goes as its ten digits, as always. Any other goes
+         with its "+code", which is what tells the server to keep the code and
+         to send the OTP on WhatsApp - the SMS gateway does not leave India. */
+      var phone = cc === "91" ? local : "+" + cc + local;
+      var channel = cc === "91" ? "sms" : "whatsapp";
+      var next = loginForm.dataset.next;
+      var otpUrl = loginForm.dataset.otpUrl + "?phone=" + encodeURIComponent(phone) +
+        "&channel=" + channel + (next ? "&next=" + encodeURIComponent(next) : "");
+      var inline = !!(otpStep && loginStep);
+      if (inline) {
+        /* before the request, while the tap still counts */
+        showOtpStep(phone, channel);
+        try { history.pushState({ v5otp: phone, channel: channel }, "", otpUrl); } catch (err) { /* file:// etc. */ }
+      } else {
+        label.textContent = "Sending…";
+      }
+      window.v5Busy(sendBtn, true);
+      postJSON(loginForm.dataset.sendOtpUrl, { phone: phone, channel: channel }, loginForm)
+        .then(function (d) {
+          window.v5Busy(sendBtn, false);
+          if (d.ok) {
+            if (!inline) window.location = otpUrl;   // still spinning: the code screen is loading
+            return;
+          }
+          if (inline) {
+            showLoginStep();
+            try { if (history.state && history.state.v5otp) history.back(); } catch (err) {}
+          } else {
+            label.textContent = "Send OTP";
+          }
+          showMsg("v5-login-msg", d.message || "Couldn't send the OTP.");
+        })
+        .catch(function () {
+          window.v5Busy(sendBtn, false);
+          if (inline) {
+            showLoginStep();
+            try { if (history.state && history.state.v5otp) history.back(); } catch (err) {}
+          } else {
+            label.textContent = "Send OTP";
+          }
+          showMsg("v5-login-msg", "Network error. Try again.");
+        });
+    });
+    var ccPick = loginForm.querySelector("[name=cc]");
+    var intlNote = document.getElementById("v5-login-intl");
+    if (ccPick && intlNote) {
+      var noteSync = function () { intlNote.hidden = ccPick.value === "91"; };
+      ccPick.addEventListener("change", noteSync);
+      noteSync();
+    }
+    if (otpStep && loginStep) {
+      /* Back from the code step returns to the number; Forward brings it back */
+      window.addEventListener("popstate", function (e) {
+        if (e.state && e.state.v5otp) showOtpStep(e.state.v5otp, e.state.channel);
+        else showLoginStep();
+      });
+      Array.prototype.forEach.call(otpStep.querySelectorAll("[data-otp-back]"), function (a) {
+        a.addEventListener("click", function (e) {
+          e.preventDefault();
+          if (history.state && history.state.v5otp) history.back();
+          else showLoginStep();
+        });
+      });
+    }
+  }
+
+  /* OTP screen: verify the code, land back where the user was headed */
+  var otpForm = document.getElementById("v5-otp-form");
+  if (otpForm) {
+    otpForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var verifyBtn = otpForm.querySelector("button[type=submit]");
+      /* auto-fill submits on its own; a tap or Enter on top of it must not
+         verify the same code a second time */
+      if (verifyBtn && verifyBtn.getAttribute("aria-busy") === "true") return;
+      var code = Array.prototype.map.call(boxes, function (b) { return b.value; }).join("");
+      if (code.length < boxes.length) { showMsg("v5-otp-msg", "Enter the full code."); return; }
+      var label = otpForm.querySelector("[data-label]");
+      label.textContent = "Checking…";
+      window.v5Busy(verifyBtn, true);
+      showMsg("v5-otp-msg", "");
+      postJSON(otpForm.dataset.verifyUrl, {
+        phone: otpForm.dataset.phone, otp: code, next: otpForm.dataset.next,
+      }, otpForm)
+        .then(function (d) {
+          if (d.ok) { window.location = d.next; }
+          else {
+            label.textContent = "Start donating →";
+            window.v5Busy(verifyBtn, false);
+            showMsg("v5-otp-msg", d.message || "Wrong code.");
+          }
+        })
+        .catch(function () {
+          label.textContent = "Start donating →";
+          window.v5Busy(verifyBtn, false);
+          showMsg("v5-otp-msg", "Network error. Try again.");
+        });
+    });
+    var resend = document.getElementById("v5-otp-resend");
+    var resendLine = document.querySelector("[data-otp-resend-line]");
+    var channels = document.getElementById("v5-otp-channels");
+    var toast = document.getElementById("v5-otp-toast");
+    if (resend && resendLine && channels) {
+      var COOLDOWN = parseInt(otpForm.dataset.resendCooldown, 10) || 30;
+      var chButtons = channels.querySelectorAll("[data-otp-channel]");
+      var cooldownTimer = null;
+      var toastTimers = [];
+      var inFlight = false;
+
+      function each(fn) { Array.prototype.forEach.call(chButtons, fn); }
+
+      function showToast(text) {
+        if (!toast) return;
+        toastTimers.forEach(clearTimeout);
+        toastTimers = [];
+        toast.textContent = text;
+        toast.hidden = false;
+        /* read a layout property so the browser commits `hidden` being removed
+           before the class lands - without it the fade has nothing to fade
+           from and the toast simply appears */
+        void toast.offsetWidth;
+        toast.classList.add("on");
+        toastTimers.push(setTimeout(function () {
+          toast.classList.remove("on");
+          toastTimers.push(setTimeout(function () { toast.hidden = true; }, 240));
+        }, 3400));
+      }
+
+      function openPicker() {
+        resendLine.style.display = "none";
+        channels.style.display = "";
+      }
+
+      function closePicker() {
+        channels.style.display = "none";
+        resendLine.style.display = "";
+        /* next round starts neutral - no button still wearing the colour of a
+           choice made a minute ago */
+        each(function (b) {
+          b.classList.remove("otp-ch--on");
+          b.disabled = false;
+        });
+      }
+
+      /* While this runs, Resend is text rather than a link. Reaching zero puts
+         the link back, which is what makes the cycle repeat. */
+      function startCooldown(seconds) {
+        if (cooldownTimer) clearInterval(cooldownTimer);
+        var left = Math.max(1, Math.ceil(seconds));
+        resend.classList.add("is-waiting");
+        function tick() {
+          if (left <= 0) {
+            clearInterval(cooldownTimer);
+            cooldownTimer = null;
+            resend.classList.remove("is-waiting");
+            resend.textContent = "Resend";
+            return;
+          }
+          resend.textContent = "Resend in " + left + "s";
+          left -= 1;
+        }
+        tick();
+        cooldownTimer = setInterval(tick, 1000);
+      }
+
+      resend.addEventListener("click", function (e) {
+        e.preventDefault();
+        if (cooldownTimer) return; // still counting down
+        openPicker();
+      });
+
+      each(function (btn) {
+        btn.addEventListener("click", function () {
+          if (inFlight) return;
+          inFlight = true;
+          var channel = btn.dataset.otpChannel;
+          var name = channel === "whatsapp" ? "WhatsApp" : "SMS";
+          showMsg("v5-otp-msg", "");
+          /* colour first, before the request answers: the tap has to look like
+             it landed even on a slow connection */
+          each(function (b) {
+            b.classList.toggle("otp-ch--on", b === btn);
+            b.disabled = true;
+          });
+          window.v5Busy(btn, true);
+
+          postJSON(otpForm.dataset.sendOtpUrl,
+                   { phone: otpForm.dataset.phone, channel: channel }, otpForm)
+            .then(function (d) {
+              inFlight = false;
+              window.v5Busy(btn, false);
+              if (d.ok) {
+                showToast("You will get OTP from " + name);
+                /* a beat, so the colour change is seen rather than blinked
+                   past, then back to a counting-down Resend */
+                setTimeout(function () {
+                  closePicker();
+                  startCooldown(d.retry_after || COOLDOWN);
+                }, 650);
+                return;
+              }
+              /* Refused for being too early - the server knows exactly how much
+                 wait is left, so run ITS clock rather than a fresh one. */
+              if (d.retry_after) {
+                showToast(d.message || "Please wait a moment before asking again.");
+                closePicker();
+                startCooldown(d.retry_after);
+                return;
+              }
+              /* A real failure: leave the picker open so the OTHER channel can
+                 be tried straight away. */
+              each(function (b) {
+                b.disabled = false;
+                b.classList.remove("otp-ch--on");
+              });
+              showMsg("v5-otp-msg", d.message || "Couldn't resend.");
+            })
+            .catch(function () {
+              inFlight = false;
+              window.v5Busy(btn, false);
+              each(function (b) {
+                b.disabled = false;
+                b.classList.remove("otp-ch--on");
+              });
+              showMsg("v5-otp-msg", "Network error. Try again.");
+            });
+        });
+      });
+
+      /* Entering the code step - at load on /otp/, or on the tap that reveals
+         it on the login page. A code was sent moments before either, so the
+         cycle starts mid-cooldown: a live Resend here would only earn a 429. */
+      otpStepStart = function (phone, channel) {
+        otpForm.dataset.phone = phone;
+        var intl = phone.charAt(0) === "+" && phone.indexOf("+91") !== 0;
+        otpForm.dataset.intl = intl ? "1" : "";
+        var shown = otpForm.querySelector("[data-otp-phone]");
+        if (shown) {
+          shown.textContent = phone.charAt(0) === "+" ? phone
+            : "+91 " + phone.slice(0, 5) + " " + phone.slice(5);
+        }
+        var chName = otpForm.querySelector("[data-otp-channel-name]");
+        if (chName) chName.textContent = channel === "whatsapp" ? "WhatsApp" : "SMS";
+        Array.prototype.forEach.call(boxes, function (b) { b.value = ""; });
+        showMsg("v5-otp-msg", "");
+        closePicker();
+        startCooldown(COOLDOWN);
+        if (boxes[0]) boxes[0].focus();
+      };
+      if (!otpStep) startCooldown(COOLDOWN);
+    }
+  }
+
+  /* Donate: create the order server-side, then hand off to PhonePe's hosted page */
+  var donateBtn = document.getElementById("v5-donate-btn");
+  if (donateBtn) {
+
+    /* Extras sheet: pick add-ons/package before paying. The prices shown here
+       are a preview — api_checkout re-prices everything from the database. */
+    var sheet = document.querySelector("[data-sheet]");
+    var scrim = document.querySelector("[data-sheet-scrim]");
+    /* the close button sits above the sheet, so it is a sibling, not a child */
+    var sheetX = document.querySelector("[data-sheet-close]");
+    var sheetConfirm = null;
+    var sheetOpen = false;
+
+    /* the sheet's button goes back to "Add ₹X" and the sheet comes down, so a
+       failed checkout leaves the donor on the page reading why */
+    function sheetFail() {
+      if (sheetConfirm) {
+        sheetConfirm.disabled = false;
+        window.v5Busy(sheetConfirm, false);
+        if (sheetConfirm.dataset.label) sheetConfirm.innerHTML = sheetConfirm.dataset.label;
+      }
+      if (sheetOpen) setSheet(false);
+    }
+
+    /* The count-and-photo block under the cake-with-image package row */
+    function cakeBox(packId) {
+      return sheet && packId ? sheet.querySelector('[data-cake][data-cake-for="' + packId + '"]') : null;
+    }
+    function cakeErr(box, msg) {
+      var slot = box && box.querySelector('[data-err-for="cake-image"]');
+      if (!slot) return;
+      slot.textContent = msg || "";
+      slot.classList.toggle("on", !!msg);
+    }
+
+    function sheetExtras() {
+      if (!sheet) return { addons: [], package: "", packageName: "", packagePrice: 0, packageCount: 0, cakeRate: 0, cakeImage: 0, cakeCount: 0, cakeFile: null, addonUnit: 0, serve: [], serveUnit: 0, names: [] };
+      var addons = [], addonUnit = 0;
+      sheet.querySelectorAll("[data-addon]").forEach(function (box) {
+        if (box.checked) {
+          addons.push(box.value);
+          addonUnit += parseInt(box.dataset.price, 10) || 0;
+        }
+      });
+      /* read separately: these post keys, not add-on ids, and counting them as
+         add-ons would eat two of the four slots the cap allows */
+      var serve = [], serveUnit = 0;
+      sheet.querySelectorAll("[data-serve]").forEach(function (box) {
+        if (box.checked) {
+          serve.push(box.value);
+          serveUnit += parseInt(box.dataset.price, 10) || 0;
+        }
+      });
+      /* the package stays OUT of the add-on subtotal: it replaces the per-unit
+         line rather than stacking on it */
+      var picked = sheet.querySelector("[data-package]:checked");
+      var pack = picked && picked.value ? picked : null;
+      /* the cake package has no bundle price - its parcels are priced per
+         unit, and its cakes and photo live in the block under its row */
+      /* data-cake-pkg marks the cake package; its cake rate can be 0 */
+      var cakePkg = !!pack && pack.dataset.cakePkg === "1";
+      var cakeRate = cakePkg ? parseInt(pack.dataset.cakeRate, 10) || 0 : 0;
+      var box = cakePkg ? cakeBox(pack.value) : null;
+      var cakeInput = box ? box.querySelector("[data-cake-file]") : null;
+      return {
+        addons: addons,
+        package: pack ? pack.value : "",
+        packageName: pack ? (pack.dataset.name || "Package") : "",
+        packagePrice: pack && !cakePkg ? parseInt(pack.dataset.price, 10) || 0 : 0,
+        packageCount: pack ? parseInt(pack.dataset.count, 10) || 0 : 0,
+        cakePkg: cakePkg,
+        cakeRate: cakeRate,
+        cakeImage: cakePkg ? parseInt(pack.dataset.cakeImage, 10) || 0 : 0,
+        cakeCount: cakePkg ? 1 : 0,
+        cakeFile: cakeInput && cakeInput.files && cakeInput.files[0] ? cakeInput.files[0] : null,
+        addonUnit: addonUnit,
+        serve: serve,
+        serveUnit: serveUnit,
+
+        names: Array.prototype.map.call(
+          sheet.querySelectorAll("[data-serve]:checked,[data-addon]:checked"),
+          function (box) { return box.dataset.name || ""; }
+        ).filter(Boolean),
+      };
+    }
+
+    var ADDON_CAP = 4;
+
+    function sheetRefresh() {
+      if (!sheet) return;
+      var unit = parseInt(sheet.querySelector("[data-sheet-base]").textContent, 10) || 0;
+      var extras = sheetExtras();
+      v5Extras = extras;
+
+      var packed = !!extras.package;
+      var replaces = packed && !extras.cakePkg;
+      var qty = packed && extras.packageCount
+        ? extras.packageCount
+        : parseInt((stepper && stepper.dataset.currentQty) || "1", 10);
+      /* the serving flags are per parcel, so they multiply by the count exactly
+         as an add-on does - the server prices them the same way */
+      var perUnitExtra = extras.addonUnit + extras.serveUnit;
+      /* The parcel photo belongs in this total too. It was missing, so the
+         sheet - the LAST number before PhonePe - quoted Rs.5 x count (and the
+         cake surcharge) less than the donor was actually charged. */
+      /* qty is a count here too - see the note in the stepper's render() */
+      var photo = window.v5ParcelPhotoCost ? window.v5ParcelPhotoCost(qty) : 0;
+      var cake = (extras.cakeRate + extras.cakeImage) * extras.cakeCount;
+      var total = (replaces ? extras.packagePrice : unit * qty) + cake + perUnitExtra * qty + photo;
+
+      sheet.querySelectorAll("[data-sheet-qty]").forEach(function (el) { el.textContent = qty; });
+      sheet.querySelector("[data-sheet-total]").textContent = total;
+      /* say the multiplication out loud - a donor who ticks a Rs.10 add-on on
+         30 parcels should see where the Rs.300 came from */
+      sheet.querySelectorAll("[data-sheet-addon]").forEach(function (el) {
+        el.textContent = perUnitExtra ? "₹" + perUnitExtra + " × " + qty : "";
+        el.hidden = !perUnitExtra;
+      });
+      /* the package brings its own count, so its stepper has nothing to change */
+      sheet.querySelectorAll("[data-sheet-minus],[data-sheet-plus]").forEach(function (b) {
+        b.disabled = packed && !!extras.packageCount;
+      });
+
+      /* only the picked cake package opens its photo block */
+      sheet.querySelectorAll("[data-cake]").forEach(function (box) {
+        box.hidden = box.dataset.cakeFor !== extras.package;
+      });
+
+      /* at the cap the remaining add-ons grey out, like a dish sheet does */
+      var full = extras.addons.length >= ADDON_CAP;
+      sheet.querySelectorAll("[data-addon]").forEach(function (box) {
+        box.disabled = full && !box.checked;
+        box.closest("[data-opt]").classList.toggle("opt--off", box.disabled);
+      });
+
+      /* the page behind the sheet quotes the same number, live */
+      repriceBill();
+    }
+
+    function setSheet(open) {
+      if (!sheet || !scrim) return;
+      sheetOpen = open;
+      sheet.hidden = !open;
+      scrim.hidden = !open;
+      if (sheetX) sheetX.hidden = !open;
+      document.body.style.overflow = open ? "hidden" : "";
+      if (open) sheetRefresh();
+    }
+
+    if (sheet) {
+      var capEl = sheet.querySelector("[data-addon-cap]");
+      if (capEl) capEl.textContent = ADDON_CAP;
+      sheet.addEventListener("change", sheetRefresh);
+      sheet.querySelectorAll("[data-cake]").forEach(function (box) {
+        /* the same checks the parcel photo gets; parcel_photo_error repeats
+           them server-side */
+        var input = box.querySelector("[data-cake-file]");
+        input.addEventListener("change", function () {
+          var f = input.files && input.files[0];
+          cakeErr(box, "");
+          if (!f) return;
+          if (["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"].indexOf((f.type || "").toLowerCase()) === -1) {
+            input.value = "";
+            cakeErr(box, "Please choose a JPG, PNG, GIF or WebP image.");
+          } else if (f.size > 5 * 1024 * 1024) {
+            input.value = "";
+            cakeErr(box, "That photo is over 5 MB. Please pick a smaller one.");
+          }
+        });
+      });
+      /* the package is optional and there is no "none" row: clicking the
+         picked package again clears it */
+      sheet.querySelectorAll("[data-package]").forEach(function (radio) {
+        radio.addEventListener("click", function () {
+          if (radio.dataset.wasPicked === "1") {
+            radio.checked = false;
+            radio.dataset.wasPicked = "0";
+            sheetRefresh();
+            return;
+          }
+          sheet.querySelectorAll("[data-package]").forEach(function (r) {
+            r.dataset.wasPicked = "0";
+          });
+          radio.dataset.wasPicked = "1";
+        });
+      });
+      if (sheetX) sheetX.addEventListener("click", function () { setSheet(false); });
+      scrim.addEventListener("click", function () { setSheet(false); });
+      /* the sheet's own stepper drives the page stepper, so both stay in step */
+      sheet.querySelector("[data-sheet-minus]").addEventListener("click", function () {
+        if (stepper) stepper.querySelector("[data-minus]").click();
+        sheetRefresh();
+      });
+      sheet.querySelector("[data-sheet-plus]").addEventListener("click", function () {
+        if (stepper) stepper.querySelector("[data-plus]").click();
+        sheetRefresh();
+      });
+      sheetConfirm = sheet.querySelector("[data-sheet-confirm]");
+      sheetConfirm.addEventListener("click", function () {
+        donateBtn.dataset.extrasChosen = "1";
+        sheetConfirm.disabled = true;
+        sheetConfirm.dataset.label = sheetConfirm.innerHTML;
+        sheetConfirm.textContent = "Taking you to pay…";
+        window.v5Busy(sheetConfirm, true);
+        donateBtn.click();
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && sheetOpen) setSheet(false);
+      });
+      sheetRefresh();
+    }
+
+    donateBtn.addEventListener("click", function () {
+      showMsg("v5-pay-msg", "");
+      clearFieldErrors();
+
+      // same event names as the main site's donation modal, once per page
+      if (window.v5Track && !donateBtn.dataset.trackedStart) {
+        donateBtn.dataset.trackedStart = "1";
+        window.v5Track("checkout_started", { cause: donateBtn.dataset.causeName || donateBtn.dataset.slug });
+      }
+
+      var required = [
+        ["parcel-name", "Add the name that goes on the parcel."],
+        ["service-date", "Pick the service date."],
+      ];
+      var firstBad = null;
+      for (var r = 0; r < required.length; r++) {
+        var field = document.getElementById(required[r][0]);
+        if (field && !field.value.trim()) {
+          var slot = document.querySelector('[data-err-for="' + required[r][0] + '"]');
+          if (slot) {
+            slot.textContent = required[r][1];
+            slot.classList.add("on");
+          }
+          var box = field.closest ? field.closest(".field") : null;
+          if (box) box.classList.add("field--err");
+          if (!firstBad) firstBad = required[r][0];
+        }
+      }
+      /* A date before today. The input's min only binds inside a <form> and
+         this page has none, so a typed past date - or a page reopened a day
+         after it was rendered, still holding yesterday - went through, and
+         _run_checkout quietly served it today instead. */
+      var dateField = document.getElementById("service-date");
+      if (dateField && dateField.value) {
+        var now = new Date();
+        var today = now.getFullYear() + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + ("0" + now.getDate()).slice(-2);
+        var floor = dateField.min && dateField.min > today ? dateField.min : today;
+        if (dateField.value < floor) {
+          var dateSlot = document.querySelector('[data-err-for="service-date"]');
+          if (dateSlot) {
+            dateSlot.textContent = "Pick today or a later date.";
+            dateSlot.classList.add("on");
+          }
+          var dateBox = dateField.closest ? dateField.closest(".field") : null;
+          if (dateBox) dateBox.classList.add("field--err");
+          if (!firstBad) firstBad = "service-date";
+        }
+      }
+      if (firstBad) {
+        showFieldError(firstBad, document.querySelector('[data-err-for="' + firstBad + '"]').textContent);
+        return;
+      }
+
+      /* "Add a photo on the parcel" ticked, but no photo picked. Checked BEFORE
+         the extras sheet opens, so the donor is sent back to the field that is
+         wrong instead of being bounced out of the sheet a step later. */
+      if (window.v5ParcelPhotoCheck && !window.v5ParcelPhotoCheck()) return;
+
+      /* First click opens the extras sheet; the sheet's button comes back here. */
+      if (sheet && donateBtn.dataset.extrasChosen !== "1") {
+        setSheet(true);
+        return;
+      }
+      donateBtn.dataset.extrasChosen = "";
+
+      var extras = sheetExtras();
+      /* The photo IS the cake package: refuse here, in the open sheet, rather
+         than let api_checkout bounce the donor with a 400. */
+      if (extras.cakePkg && !extras.cakeFile) {
+        var cakeEl = cakeBox(extras.package);
+        cakeErr(cakeEl, "Choose the photo to print on the cake.");
+        if (sheetConfirm) {
+          sheetConfirm.disabled = false;
+          window.v5Busy(sheetConfirm, false);
+          if (sheetConfirm.dataset.label) sheetConfirm.innerHTML = sheetConfirm.dataset.label;
+        }
+        if (cakeEl && cakeEl.scrollIntoView) {
+          try { cakeEl.scrollIntoView({ block: "center", behavior: "smooth" }); }
+          catch (e) { cakeEl.scrollIntoView(); }
+        }
+        return;
+      }
+
+      donateBtn.disabled = true;
+      window.v5Busy(donateBtn, true);
+      var payload = {
+        slug: donateBtn.dataset.slug,
+        qty: parseInt((stepper && stepper.dataset.currentQty) || "1", 10),
+        /* "amount" mode's stepper holds the typed rupee amount, not a unit
+           count; api_checkout only reads this for a free-amount cause, so
+           sending it unconditionally is harmless for every other cause. */
+        amount: parseInt((stepper && stepper.dataset.currentQty) || "0", 10),
+        parcel_name: (document.getElementById("parcel-name") || {}).value || "",
+        service_date: (document.getElementById("service-date") || {}).value || "",
+        occasion: (document.getElementById("occasion") || {}).value || "",
+        addons: extras.addons,
+        package: extras.package,
+        serve: extras.serve,
+      };
+      var photoFile = window.v5ParcelPhoto ? window.v5ParcelPhoto() : null;
+      var send;
+      if (photoFile || extras.cakeFile) {
+        var form = new FormData();
+        Object.keys(payload).forEach(function (k) {
+          if (Array.isArray(payload[k])) payload[k].forEach(function (v) { form.append(k, v); });
+          else form.append(k, payload[k]);
+        });
+        if (photoFile) form.append("photo-upload", photoFile);
+        /* the name api_checkout reads: request.FILES["cake-image"] */
+        if (extras.cakeFile) form.append("cake-image", extras.cakeFile);
+        send = fetch(donateBtn.dataset.checkoutUrl, {
+          method: "POST",
+          headers: { "X-CSRFToken": csrf() },
+          body: form,
+        }).then(function (r) {
+          return r.json().then(function (d) { d._status = r.status; return d; });
+        });
+      } else {
+        send = postJSON(donateBtn.dataset.checkoutUrl, payload);
+      }
+      send
+        .then(function (d) {
+          if (d.login_required) {
+            window.location = d.login_url || donateBtn.dataset.loginUrl;
+            return;
+          }
+          if (!d.ok || !d.pay_url) throw new Error(d.message || "Payment setup failed.");
+          if (window.v5Track) {
+            var totalEl = document.querySelector('.bill-total [data-total="{t}"]');
+            window.v5Track("payment_initiated", {
+              cause: donateBtn.dataset.causeName || donateBtn.dataset.slug,
+              amount: totalEl ? (totalEl.textContent.replace(/[^\d.]/g, "") || "") : "",
+            });
+          }
+          window.location.assign(d.pay_url);
+        })
+        .catch(function (err) {
+          donateBtn.disabled = false;
+          window.v5Busy(donateBtn, false);
+          sheetFail();
+          showMsg("v5-pay-msg", err.message || "Something went wrong. Try again.");
+        });
+    });
+
+    window.addEventListener("pageshow", function (e) {
+      if (!e.persisted) return;
+      donateBtn.disabled = false;
+      donateBtn.dataset.extrasChosen = "";
+      sheetFail();
+      showMsg("v5-pay-msg", "");
+    });
+  }
+})();
+
+(function () {
+  function stamp(v) {
+    var secs = v.duration;
+    if (!isFinite(secs) || secs <= 0) return;
+    var label = v.parentElement && v.parentElement.querySelector("[data-dur-label]");
+    if (!label) return;
+    var m = Math.floor(secs / 60), s = Math.floor(secs % 60);
+    label.textContent = m + ":" + (s < 10 ? "0" : "") + s + " clip";
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("video[data-dur]"), function (v) {
+    if (v.readyState >= 1) stamp(v);
+    else v.addEventListener("loadedmetadata", function () { stamp(v); });
+  });
+
+})();
+
+/* ---- Photo viewer ----
+   Every screen that shows proof photos: the campaign pages' documents, the
+   proof gallery and the tracking page's strip. Markup is v5_photo_viewer.html;
+   the list is built from the TILES ([data-proof]) so a photo's URL lives in the
+   page once, and each tile keeps its href as the no-JS fallback.
+
+   A tile's caption comes from data-proof-label, else a .lgal__cap inside it,
+   else the image's alt - the three shapes the tiles actually have. */
+(function () {
+  var pv = document.querySelector("[data-pv]");
+  var tiles = Array.prototype.slice.call(document.querySelectorAll("[data-proof]"));
+  if (!pv || !tiles.length) return;
+
+  var img = pv.querySelector("[data-pv-img]");
+  /* busy from a new src until it has arrived - see .pv__box[aria-busy] */
+  var box = img.parentNode;
+  function arrived() { window.v5Busy(box, false); }
+  img.addEventListener("load", arrived);
+  img.addEventListener("error", arrived);
+  var labelEl = pv.querySelector("[data-pv-label]");
+  var countEl = pv.querySelector("[data-pv-count]");
+  var prevBtn = pv.querySelector("[data-pv-prev]");
+  var nextBtn = pv.querySelector("[data-pv-next]");
+  var at = 0;
+  var opener = null;
+
+  function labelOf(a, i) {
+    if (a.getAttribute("data-proof-label")) return a.getAttribute("data-proof-label");
+    var cap = a.querySelector(".lgal__cap");
+    if (cap && cap.textContent.trim()) return cap.textContent.trim();
+    var im = a.querySelector("img");
+    if (im && im.alt) return im.alt;
+    return "Photo " + (i + 1);
+  }
+
+  var docs = tiles.map(function (a, i) {
+    return { src: a.getAttribute("href"), label: labelOf(a, i) };
+  });
+
+  function render() {
+    var d = docs[at];
+    window.v5Busy(box, true);
+    img.src = d.src;
+    if (img.complete && img.naturalWidth) arrived();   /* already in memory: no load event to wait for */
+    img.alt = d.label;
+    labelEl.textContent = d.label;
+    countEl.textContent = (at + 1) + " of " + docs.length;
+    prevBtn.hidden = nextBtn.hidden = docs.length < 2;   /* one photo needs no arrows */
+  }
+
+  function open(i, from) {
+    at = i;
+    opener = from || null;
+    render();
+    pv.hidden = false;
+    document.body.style.overflow = "hidden";
+    pv.querySelector("[data-pv-close]").focus();
+  }
+
+  function close() {
+    pv.hidden = true;
+    document.body.style.overflow = "";
+    img.src = "";                 /* stop a large photo sitting in memory */
+    if (opener) opener.focus();   /* put focus back where it came from */
+  }
+
+  function step(n) {
+    at = (at + n + docs.length) % docs.length;   /* wraps both ways */
+    render();
+  }
+
+  tiles.forEach(function (a, i) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      open(i, a);
+    });
+  });
+
+  /* "+4" under a strip that only shows six: open the viewer on the seventh
+     rather than sending the donor to another page to see the rest. */
+  var more = document.querySelector("[data-shots-more]");
+  if (more) {
+    more.addEventListener("click", function () {
+      open(Math.min(6, docs.length - 1), more);
+    });
+  }
+  Array.prototype.forEach.call(pv.querySelectorAll("[data-pv-close]"), function (el) {
+    el.addEventListener("click", close);
+  });
+  prevBtn.addEventListener("click", function () { step(-1); });
+  nextBtn.addEventListener("click", function () { step(1); });
+
+  document.addEventListener("keydown", function (e) {
+    if (pv.hidden) return;
+    if (e.key === "Escape") close();
+    else if (e.key === "ArrowLeft") step(-1);
+    else if (e.key === "ArrowRight") step(1);
+  });
+
+  /* Swipe, because this is a phone first. 40px of travel and more horizontal
+     than vertical, so a scroll is never read as a page turn. */
+  var x0 = null, y0 = null;
+  pv.addEventListener("touchstart", function (e) {
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+  }, { passive: true });
+  pv.addEventListener("touchend", function (e) {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) step(dx < 0 ? 1 : -1);
+    x0 = y0 = null;
+  });
+})();
+
+/* The checkout POST for the campaign and orphanage screens - one donate
+   button, two body shapes.
+
+   A file cannot ride in a JSON body, so a POST that carries a parcel photo
+   goes out as FormData with the very same JSON in a `payload` field beside it.
+   That keeps the nested shapes those checkouts read (the kit's {item: qty}
+   map, the meal and package lists) instead of flattening them into form fields
+   and rebuilding them server-side; parcel_photo.checkout_body reads both.
+
+   Its own module rather than part of the photo picker below, which returns
+   early on a page that has no photo block - the poster has to exist either way.
+
+   Content-Type is set ONLY on the JSON path: setting it on FormData would
+   overwrite the multipart boundary the browser generates, and the body would
+   arrive unparseable. */
+window.v5PostCheckout = function (url, body, token) {
+  if (!token) {
+    var el = document.querySelector("[name=csrfmiddlewaretoken]");
+    token = el ? el.value : "";
+  }
+  var photo = window.v5ParcelPhoto ? window.v5ParcelPhoto() : null;
+  var opts = {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "X-CSRFToken": token },
+  };
+  if (photo) {
+    var form = new FormData();
+    form.append("payload", JSON.stringify(body));
+    form.append("photo-upload", photo);
+    opts.body = form;
+  } else {
+    opts.headers["Content-Type"] = "application/json";
+    opts.body = JSON.stringify(body);
+  }
+  return fetch(url, opts).then(function (r) { return r.json(); });
+};
+
+(function () {
+  var toggle = document.querySelector("[data-photo-toggle]");
+  if (!toggle) return;
+  var body = document.querySelector("[data-photo-body]");
+  var file = document.querySelector("[data-photo-file]");
+  var rateEl = document.querySelector("[data-photo-rate]");
+  var RATE = parseInt((rateEl && rateEl.dataset.photoRate) || "5", 10) || 5;
+  /* A one-off surcharge for the cause, charged ONCE however many parcels.
+     0 for every cause today - the photo is Rs.5 a parcel. */
+  var FLAT = parseInt((rateEl && rateEl.dataset.photoFlat) || "0", 10) || 0;
+  /* Parcels in one count: 20 on the cake causes (Rs.5 x 20 a count). A
+     package's food_count is already parcels, so callers pass counted=true. */
+  var PER = parseInt((rateEl && rateEl.dataset.photoPer) || "1", 10) || 1;
+  var MAX_BYTES = 5 * 1024 * 1024;
+  var OK_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+
+  function err(msg) {
+    var slot = document.querySelector('[data-err-for="parcel-photo"]');
+    if (!slot) return;
+    slot.textContent = msg || "";
+    slot.classList.toggle("on", !!msg);
+  }
+
+  function chosen() {
+    return toggle.checked && file && file.files && file.files[0] ? file.files[0] : null;
+  }
+  window.v5ParcelPhoto = chosen;
+  window.v5ParcelPhotoRate = function () { return toggle.checked ? RATE : 0; };
+  window.v5ParcelPhotoFlat = function () { return toggle.checked ? FLAT : 0; };
+  /* The whole photo line for a given count - one function, so the bill, the
+     sheet and the server all add it up the same way. */
+  window.v5ParcelPhotoPer = function () { return PER; };
+  window.v5ParcelPhotoParcels = function (qty, counted) {
+    var n = parseInt(qty, 10) || 0;
+    return counted ? n : n * PER;
+  };
+  window.v5ParcelPhotoCost = function (qty, counted) {
+    return toggle.checked ? FLAT + RATE * window.v5ParcelPhotoParcels(qty, counted) : 0;
+  };
+
+  /* Ticking the box on its own buys nothing: the bill already shows the
+     +Rs.rate line, but with no file the POST carries no photo, the server
+     charges nothing for one it never received, and the parcel is printed
+     without it. So every donate button asks this first - the cause screen, both
+     campaign screens and both orphanage screens. Shows the error itself and
+     returns false, so the caller is one `if`. */
+  window.v5ParcelPhotoCheck = function () {
+    if (!toggle.checked || chosen()) { return true; }
+    err("Choose the photo to print, or untick the box.");
+    var target = body || toggle;
+    if (target && target.scrollIntoView) {
+      try { target.scrollIntoView({ block: "center", behavior: "smooth" }); }
+      catch (e) { target.scrollIntoView(); }
+    }
+    return false;
+  };
+
+  toggle.addEventListener("change", function () {
+    if (body) body.hidden = !toggle.checked;
+    if (!toggle.checked) { if (file) file.value = ""; err(""); }
+    if (window.v5Recalc) window.v5Recalc();
+  });
+
+  if (file) {
+    file.addEventListener("change", function () {
+      var f = file.files && file.files[0];
+      err("");
+      if (!f) { if (window.v5Recalc) window.v5Recalc(); return; }
+      if (OK_TYPES.indexOf((f.type || "").toLowerCase()) === -1) {
+        file.value = "";
+        err("Please choose a JPG, PNG, GIF or WebP image.");
+      } else if (f.size > MAX_BYTES) {
+        file.value = "";
+        err("That photo is over 5 MB. Please pick a smaller one.");
+      }
+      if (window.v5Recalc) window.v5Recalc();
+    });
+  }
+})();
+
+/* OTP auto-fill.
+
+   Two mechanisms, because no single one covers both platforms:
+
+   - autocomplete="one-time-code" on the first box (set in v5_otp.html) is what
+     iOS reads, and what Gboard's code suggestion writes into. Both hand over
+     the WHOLE code as one ordinary `input` event, which the handler below
+     spreads across the row. This needs nothing from the SMS beyond the code
+     being recognisably a code, so it works with the plain DLT template.
+   - The Web OTP API is Chrome on Android, and it is STRICTER: it resolves only
+     when the SMS ends with a line of exactly "@<origin> #<code>". Our SMS has
+     no such line - it is not in the registered DLT template, and adding it got
+     the message dropped by the operator. So the call is gated on
+     data-web-otp, fed from main.views.SMS_HAS_WEBOTP_BINDING.
+
+     Calling it anyway is worse than not calling it: Chrome asks the donor for
+     permission to read the SMS and then, with nothing to match, never resolves
+     and never fills. A prompt that leads nowhere reads as broken auto-fill,
+     which is exactly what it was.
+
+     It is also SMS-only by design, so a code that arrived on WhatsApp will
+     never auto-fill this way - a platform limit, not a bug to chase.
+
+   Everything is wrapped: a browser without the API, an http:// origin, or a
+   donor who dismisses the prompt must all still be able to type the code. */
+(function () {
+  var form = document.getElementById("v5-otp-form");
+  if (!form) return;
+  var boxes = document.querySelectorAll(".otp-box");
+  if (!boxes.length) return;
+
+  /* Lay a run of digits across the row and leave the caret after the last one
+     filled. Returns how many landed, so the caller can tell a complete code
+     from a partial one. */
+  function spread(text) {
+    var digits = String(text).replace(/\D/g, "").slice(0, boxes.length);
+    if (!digits) return 0;
+    Array.prototype.forEach.call(boxes, function (b, i) {
+      b.value = digits.charAt(i) || "";
+    });
+    boxes[Math.min(digits.length, boxes.length) - 1].focus();
+    return digits.length;
+  }
+
+  function fill(code) {
+    return spread(code) === boxes.length;
+  }
+
+  function submit() {
+    form.dispatchEvent(new Event("submit", { cancelable: true }));
+  }
+
+  /* THE auto-fill path on iOS, and on Android via Gboard's code suggestion.
+     Neither of them pastes and neither uses the Web OTP API - the OS simply
+     writes the whole code into the one-time-code input, which reaches us as an
+     ordinary `input` event with a six-character value. (That is also why the
+     first box is maxlength="6": at 1 the browser truncated the code to its
+     first digit before this ever ran.)
+
+     A single character is someone typing, and the focus-advance handler above
+     already deals with that - so only step in when more than one arrives. */
+  Array.prototype.forEach.call(boxes, function (b) {
+    b.addEventListener("input", function () {
+      if (b.value.length < 2) return;
+      var digits = b.value.replace(/\D/g, "");
+      /* nothing usable arrived - clear it rather than leave a box six
+         characters wide showing letters the row cannot hold */
+      if (!digits) { b.value = ""; return; }
+      if (spread(digits) === boxes.length) submit();
+    });
+  });
+
+  // A paste into any box should spread across all of them - donors copy the
+  // whole code out of the message far more often than they retype it.
+  Array.prototype.forEach.call(boxes, function (b) {
+    b.addEventListener("paste", function (e) {
+      var text = (e.clipboardData || window.clipboardData).getData("text") || "";
+      if (/\d/.test(text) && fill(text)) {
+        e.preventDefault();
+        submit();
+      }
+    });
+  });
+
+  /* Only listen when the SMS actually ends with the binding line. Without it
+     this prompts and never resolves - see the block comment above. */
+  if (form.dataset.webOtp !== "1") return;
+  if (!("OTPCredential" in window) || !window.isSecureContext) return;
+  var ac = new AbortController();
+  // Stop listening once the code is in - leaving the request open holds a
+  // permission prompt over a page the donor has already finished with.
+  form.addEventListener("submit", function () { ac.abort(); });
+  window.addEventListener("pagehide", function () { ac.abort(); });
+
+  navigator.credentials
+    .get({ otp: { transport: ["sms"] }, signal: ac.signal })
+    .then(function (cred) {
+      if (cred && cred.code && fill(cred.code)) {
+        form.dispatchEvent(new Event("submit", { cancelable: true }));
+      }
+    })
+    .catch(function () { /* dismissed, timed out, or unsupported - type it */ });
+})();
+
+/* ---- Occasion picker (cause detail) ----
+   Drives the button + column-wise panel that stands in for a <select>; see
+   .occ in app.css for why it is not one. The chosen value is written back to
+   the hidden #occasion input, which is what the checkout payload reads, so
+   nothing downstream had to change when the control did. */
+(function () {
+  var root = document.querySelector("[data-occ]");
+  if (!root) return;
+
+  var btn = root.querySelector("[data-occ-btn]");
+  var panel = root.querySelector("[data-occ-panel]");
+  var label = root.querySelector("[data-occ-label]");
+  var input = document.getElementById("occasion");
+  if (!btn || !panel || !label || !input) return;
+
+  function setOpen(open) {
+    panel.hidden = !open;
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    /* Reopening lands on what is currently chosen rather than at the top, so
+       changing an occasion does not mean hunting for it again. */
+    if (open) {
+      var on = panel.querySelector(".occ__opt--on");
+      if (on) on.focus();
+    }
+  }
+
+  btn.addEventListener("click", function () {
+    setOpen(panel.hidden);
+  });
+
+  panel.addEventListener("click", function (e) {
+    var opt = e.target.closest ? e.target.closest("[data-occ-opt]") : null;
+    if (!opt) return;
+    panel.querySelectorAll("[data-occ-opt]").forEach(function (o) {
+      o.classList.toggle("occ__opt--on", o === opt);
+      o.setAttribute("aria-selected", o === opt ? "true" : "false");
+    });
+    input.value = opt.value;
+    /* data-short is the trigger's version of the label. The panel has room to
+       say "Not for an occasion"; the collapsed button is ~140px on a 360px
+       phone and was ellipsising that to "Not for an occas...". */
+    label.textContent = opt.dataset.short || opt.textContent.trim();
+    setOpen(false);
+    btn.focus();
+  });
+
+  /* Escape closes and hands focus back to the trigger; a click anywhere else
+     closes without choosing, the way a real select behaves. */
+  root.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape" || panel.hidden) return;
+    setOpen(false);
+    btn.focus();
+  });
+  document.addEventListener("click", function (e) {
+    if (!panel.hidden && !root.contains(e.target)) setOpen(false);
+  });
+})();
+
+/* ---- Loading bar ----
+   Starts the top bar (v5Loading, v5_base.html) whenever this page is being
+   left, and spins the button of a plain form post.
+
+   Where the Navigation API exists (Chrome, Edge, Safari 26) its navigate event
+   sees every way out: a link, a form, and the location.assign() hops the
+   donate scripts make to PhonePe. Elsewhere link clicks and form posts are
+   caught below, and a script's hop is covered by the button that is already
+   spinning when it happens.
+
+   Left alone: a new tab, a download, anything not http(s) (tel:, mailto:), a
+   jump within the page, and [data-no-loading] - a URL answered with a file
+   never replaces this page, so a bar started for it could only time out. */
+(function () {
+  var loading = window.v5Loading;
+  if (!loading) return;
+  var hasNavigationApi = !!(window.navigation && window.NavigateEvent);
+  var optedOut = false;
+
+  function leavesPage(url) {
+    var to;
+    try { to = new URL(url, location.href); } catch (e) { return false; }
+    if (to.protocol !== "http:" && to.protocol !== "https:") return false;
+    return !(to.hash && to.pathname === location.pathname && to.search === location.search);
+  }
+
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest ? e.target.closest("a[href]") : null;
+    if (!a) return;
+    if (a.closest("[data-no-loading]")) {
+      /* navigate fires straight after this click, before any timer can run */
+      optedOut = true;
+      setTimeout(function () { optedOut = false; }, 0);
+      return;
+    }
+    if (hasNavigationApi || e.defaultPrevented || e.button !== 0 ||
+        e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.hasAttribute("download")) return;
+    var target = a.getAttribute("target");
+    if (target && target !== "_self") return;
+    if (leavesPage(a.href)) loading.start();
+  });
+
+  if (hasNavigationApi) {
+    navigation.addEventListener("navigate", function (e) {
+      if (optedOut || e.hashChange || e.downloadRequest || e.destination.sameDocument) return;
+      if (leavesPage(e.destination.url)) loading.start();
+    });
+    navigation.addEventListener("navigateerror", loading.done);
+  }
+
+  /* A plain form post: profile, settings, volunteer sign-up, sign-out,
+     welcome. Screens that post with fetch call preventDefault, so they are
+     skipped here and spin their own button. */
+  document.addEventListener("submit", function (e) {
+    if (e.defaultPrevented) return;
+    var form = e.target;
+    var target = form.getAttribute("target");
+    if (target && target !== "_self") return;
+    var btn = e.submitter || form.querySelector("button[type=submit], button:not([type])");
+    window.v5Busy(btn, true);
+    loading.start();
+    /* the bar's own give-up, for the button: a post that never replaces the
+       page (the browser's Stop, an aborted request) must not leave it dead */
+    setTimeout(function () { window.v5Busy(btn, false); }, 20000);
+  });
+
+  /* Back from the next page (or from PhonePe) restores this one exactly as it
+     was left - bar running, buttons spinning - so put it back to rest.
+     BUG: this only clears the spinner. The pay buttons on v5_education_detail,
+     v5_healthcare_detail, v5_livelihood_detail, v5_orphanage_detail and
+     v5_orphanage_donate set disabled + "One moment…" and have no pageshow of
+     their own, so Back from PhonePe leaves them dead until a reload (the cause
+     page's donate block above resets its button; these never did). */
+  window.addEventListener("pageshow", function (e) {
+    loading.done();
+    if (!e.persisted) return;
+    Array.prototype.forEach.call(document.querySelectorAll('[aria-busy="true"]'), function (el) {
+      window.v5Busy(el, false);
+    });
+  });
+})();

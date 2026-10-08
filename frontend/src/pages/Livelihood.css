@@ -1,0 +1,162 @@
+/* Livelihood Page Styles */
+.livelihood-page-container {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.uicon {
+  margin-bottom: 22px;
+}
+
+/* ===== General ===== */
+.livelihood-page-container img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.livelihood-page-container .packages_images img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+/* ===== Mobile category scroll ===== */
+.livelihood-page-container .all_categories {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 10px;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+}
+
+.livelihood-page-container .all_categories_data {
+  flex-shrink: 0;
+  width: 80px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 90px;
+}
+
+.livelihood-page-container .all_categories_data h6 {
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+
+.livelihood-page-container .categories_active img {
+  outline: 2px solid #0063fe;
+  border-radius: 4px;
+}
+
+/* ===== Search ===== */
+.livelihood-page-container .search_container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 6px 12px;
+  background: #fff;
+}
+
+.livelihood-page-container .search_container input {
+  border: none;
+  outline: none;
+  flex: 1;
+  background: transparent;
+  padding: 4px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.livelihood-page-container .search_container input::placeholder {
+  color: rgba(53, 53, 53, 0.6);
+  font-style: italic;
+}
+
+/* ===== Card links ===== */
+.livelihood-page-container a.feature-container,
+.livelihood-page-container a.feature-container:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+.livelihood-page-container a.feature-container .custom_badge,
+.livelihood-page-container a.feature-container:visited .custom_badge {
+  color: #fff !important;
+  background-color: #0063fe !important;
+  z-index: 6;
+}
+
+/* ===== Desktop categories ===== */
+.livelihood-page-container .desktop_categories {
+  overflow-x: auto;
+  padding-bottom: 10px;
+  justify-content: space-around;
+}
+
+.livelihood-page-container .category_scroll {
+  display: flex;
+  gap: 15px;
+  flex-wrap: nowrap;
+  scroll-behavior: smooth;
+}
+
+.livelihood-page-container .category_item {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 110px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+.livelihood-page-container .category_item img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  margin-bottom: 5px;
+}
+
+.livelihood-page-container .category_item span {
+  font-size: 0.85rem;
+  line-height: 1.2;
+  color: #333;
+}
+
+.livelihood-page-container .category_item:hover {
+  background: #e6f0ff;
+}
+
+.livelihood-page-container .category_item.active_category {
+  background: #0063fe;
+  border: 2px solid #0063fe;
+}
+
+.livelihood-page-container .category_item.active_category span {
+  color: #fff;
+}
+
+@media (max-width: 770px) {
+  .livelihood-page-container .sara img {
+    height: auto;
+    width: 210px;
+  }
+}
+
+@media (min-width: 771px) {
+  .livelihood-page-container .sara img {
+    height: auto;
+    width: 300px;
+  }
+}

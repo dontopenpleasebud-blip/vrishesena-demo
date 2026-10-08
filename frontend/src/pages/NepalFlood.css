@@ -1,0 +1,1237 @@
+
+  /* ── Nepal Flash Flood page ──
+     Same "dk-" design system as the generic causes-detail page
+     (main/causes_category_desktop.html), trimmed to the pieces this page
+     uses: no packages, no add-ons, no Causes row. The copy is hard-coded
+     here because this category has no DB-backed cause content. */
+
+  /* The site runs on Inter (see base_index.html and mobile.css). base.html
+     leaves the desktop body font to Bootstrap's stack, so this page sets it
+     itself; form controls and buttons do not inherit fonts, hence the list. */
+  .dk-page,
+  .dk-page input,
+  .dk-page select,
+  .dk-page textarea,
+  .dk-page button {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif
+  }
+
+  .dk-page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 32px 24px 60px
+  }
+
+  /* ── Breadcrumb ── */
+  .dk-crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 20px;
+    padding: 0;
+    list-style: none;
+    font-size: 13px;
+    color: #94a3b8
+  }
+
+  .dk-crumbs a {
+    color: #009dff;
+    font-weight: 600;
+    text-decoration: none
+  }
+
+  .dk-crumbs a:hover {
+    text-decoration: underline
+  }
+
+  .dk-crumbs li+li::before {
+    content: "/";
+    margin-right: 8px;
+    color: #cbd5e1
+  }
+
+  /* ── Hero: media left, donate panel right ── */
+  .dk-hero {
+    display: grid;
+    grid-template-columns: 1fr 522px;
+    gap: 40px;
+    align-items: start
+  }
+
+  .dk-hero-left {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0
+  }
+
+  .dk-slider-wrap {
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    background: #f0f0f0
+  }
+
+  .dk-slider-wrap .slide-content img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    display: block
+  }
+
+  .dk-slider-wrap .splide__pagination {
+    bottom: 12px
+  }
+
+  .dk-slider-wrap .splide__pagination__page {
+    background: rgba(255, 255, 255, .5);
+    width: 8px;
+    height: 8px
+  }
+
+  .dk-slider-wrap .splide__pagination__page.is-active {
+    background: #fff;
+    transform: scale(1.2)
+  }
+
+  .dk-slider-wrap .splide__arrow {
+    background: rgba(255, 255, 255, .85);
+    width: 36px;
+    height: 36px;
+    opacity: .8
+  }
+
+  .dk-slider-wrap .splide__arrow:hover {
+    opacity: 1
+  }
+
+  .dk-slider-wrap .splide__arrow svg {
+    width: 16px;
+    height: 16px;
+    fill: #333
+  }
+
+  /* Stands in for the slider until Nepal photos are added, so the hero keeps
+     its two-column balance instead of collapsing to a lone form. */
+  .dk-hero-panel {
+    border-radius: 16px;
+    padding: 36px 32px;
+    background: linear-gradient(135deg, #e8f6ff 0%, #f6fbff 100%);
+    border: 1px solid #d6ecfb
+  }
+
+  .dk-hero-panel-tag {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: #ffece6;
+    color: #d94f1e;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: .6px;
+    text-transform: uppercase
+  }
+
+  .dk-hero-panel h2 {
+    margin: 14px 0 10px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a
+  }
+
+  .dk-hero-panel p {
+    margin: 0;
+    font-size: 14px;
+    color: #475569
+  }
+
+  /* ── The three asks, compact, sitting inside the hero panel ── */
+  .dk-ask-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 22px
+  }
+
+  .dk-ask {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    padding: 0;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s, transform .2s
+  }
+
+  .dk-ask:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .1)
+  }
+
+  .dk-ask.is-active {
+    border-color: #009dff;
+    box-shadow: 0 0 0 3px rgba(0, 157, 255, .15)
+  }
+
+  .dk-ask-img {
+    width: 100%;
+    height: 108px;
+    object-fit: cover;
+    display: block
+  }
+
+  .dk-ask-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 4px;
+    padding: 11px 12px 13px
+  }
+
+  .dk-ask-title {
+    display: block;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.3;
+    color: #0f172a
+  }
+
+  .dk-ask-sub {
+    display: block;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #64748b
+  }
+
+  .dk-ask-amount {
+    display: block;
+    margin-top: auto;
+    padding-top: 6px;
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #ff6600;
+    white-space: nowrap
+  }
+
+  .dk-ask-unit {
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8
+  }
+
+  /* Raised-so-far line, shown under the price on the free-amount pack (the
+     container house) where the donor gives towards a shared goal instead of
+     buying a whole unit. */
+  .dk-ask-raised {
+    display: block;
+    margin-top: 6px
+  }
+
+  .dk-ask-raised-bar {
+    display: block;
+    height: 4px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden
+  }
+
+  .dk-ask-raised-bar > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: #16a34a
+  }
+
+  .dk-ask-raised-text {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #16a34a
+  }
+
+  .dk-ask-raised-gap {
+    display: block;
+    font-weight: 600;
+    color: #94a3b8
+  }
+
+  .dk-ask-note {
+    margin-top: 14px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #64748b
+  }
+
+  /* ── Trust badges ── */
+  .dk-trust {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px
+  }
+
+  .dk-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 13px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, .04)
+  }
+
+  .dk-trust-icon {
+    flex: 0 0 auto;
+    font-size: 21px;
+    line-height: 1
+  }
+
+  .dk-trust-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.3
+  }
+
+  .dk-trust-sub {
+    font-size: 11.5px;
+    color: #64748b;
+    line-height: 1.35
+  }
+
+  /* ── Donate panel ── */
+  .dk-info {
+    position: sticky;
+    top: 90px;
+    scroll-margin-top: 90px;
+    padding: 28px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, .06)
+  }
+
+  .dk-cause-name {
+    font-size: 26px;
+    font-weight: 800;
+    color: #1a1a1a;
+    line-height: 1.25;
+    margin: 0 0 4px
+  }
+
+  .dk-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ff6600;
+    margin: 0 0 20px
+  }
+
+  /* ── Inline quick-donate form ── */
+  .dk-qf {
+    margin: 0
+  }
+
+  .dk-qf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px
+  }
+
+  .dk-qf-field {
+    position: relative
+  }
+
+  .dk-qf-field-wide {
+    grid-column: 1 / -1
+  }
+
+  .dk-qf-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+    pointer-events: none;
+    z-index: 2
+  }
+
+  .dk-page .dk-qf-input {
+    width: 100%;
+    height: 45px;
+    padding: 4px 12px 0 38px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #0f172a;
+    outline: none;
+    box-shadow: none;
+    font-family: inherit;
+    transition: border-color .2s, box-shadow .2s;
+    -moz-appearance: textfield;
+    appearance: textfield
+  }
+
+  .dk-page .dk-qf-input::-webkit-outer-spin-button,
+  .dk-page .dk-qf-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0
+  }
+
+  .dk-page .dk-qf-input:focus {
+    border-color: #009dff;
+    box-shadow: 0 0 0 3px rgba(0, 157, 255, .12)
+  }
+
+  .dk-page .dk-qf-input::placeholder {
+    color: #94a3b8
+  }
+
+  .dk-page .dk-qf-input.error {
+    border-color: #ef4444
+  }
+
+  /* Floating label: centred until the field has a value, then shrinks up. */
+  .dk-qf-label {
+    position: absolute;
+    left: 38px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    color: #94a3b8;
+    pointer-events: none;
+    transition: all .18s ease;
+    margin: 0;
+    z-index: 2
+  }
+
+  .dk-qf-input:focus~.dk-qf-label,
+  .dk-qf-input:not(:placeholder-shown)~.dk-qf-label {
+    top: 3px;
+    transform: none;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    color: #009dff
+  }
+
+  /* Count row and amount field swap places depending on the selected pack, so
+     neither may be resurrected by a later display rule. */
+  .dk-page [hidden] {
+    display: none !important
+  }
+
+  /* intl-tel-input draws the flag + dial code inside the phone field. It wraps
+     the input in .iti, which breaks the ~ sibling floating label and collides
+     with the leading SVG icon, so .dk-qf-phone drops both and uses a real
+     placeholder instead — same as the generic causes-detail form. */
+  .dk-qf-phone .iti {
+    display: block;
+    width: 100%
+  }
+
+  .dk-page .dk-qf-phone .dk-qf-input {
+    padding-left: 14px;
+    padding-top: 0
+  }
+
+  /* ── Relief packs ──
+     Three images on one row, each captioned with its name and amount. Clicking
+     one writes its amount into #netamount, so the total always matches the pack
+     the donor chose. The row stays three-across on mobile too — the images just
+     shrink. */
+  .dk-qf-packs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px
+  }
+
+  .dk-pack {
+    position: relative;
+    display: block;
+    padding: 0;
+    overflow: hidden;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s, transform .15s
+  }
+
+  .dk-pack:hover {
+    border-color: #009dff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, .08)
+  }
+
+  .dk-pack img {
+    width: 100%;
+    height: 118px;
+    object-fit: cover;
+    display: block
+  }
+
+  /* Name and amount ride on the photo. The gradient keeps them readable
+     whatever the artwork underneath looks like. */
+  .dk-pack-cap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: block;
+    padding: 18px 8px 7px;
+    background: linear-gradient(to top, rgba(0, 0, 0, .82) 0%, rgba(0, 0, 0, .55) 45%, rgba(0, 0, 0, 0) 100%);
+    text-align: center;
+    pointer-events: none
+  }
+
+  /* The cause's amount_title, sitting above the price on the thumbnail. Two
+     lines max — an over-long caption in the admin must not swallow the photo. */
+  .dk-pack-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 2px;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .7)
+  }
+
+  .dk-pack-amount {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #ffd07a;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .6)
+  }
+
+  .dk-pack.is-active {
+    box-shadow: 0 0 0 3px rgba(0, 157, 255, .15);
+    border: 3px solid #0083d6;
+    
+  }
+
+  .dk-pack.is-active .dk-pack-amount {
+    color: #7fd4ff
+  }
+
+  /* ── Count field ──
+     Same shape as the generic causes-detail page: the presets sit inside the
+     input on the right, and the input reserves room for them with padding. */
+  /* Gap between the pack cards and the count/date row. It belongs to the row,
+     not to the count field: the count field is hidden for a free-amount pack,
+     and the date must not then sit flush against the cards. */
+  .dk-qf-grid-sched {
+    margin-top: 10px
+  }
+
+  .dk-page #nepalcount {
+    padding-right: 214px
+  }
+
+  .dk-qf-inchips {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 5px;
+    z-index: 3
+  }
+
+  .dk-qf-inchip {
+    min-width: 38px;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f7f8fa;
+    color: #475569;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: inherit;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s
+  }
+
+  .dk-qf-inchip:hover {
+    border-color: #009dff;
+    color: #0f172a
+  }
+
+  .dk-qf-inchip.is-active {
+    background: #009dff;
+    border-color: #009dff;
+    color: #fff
+  }
+
+  /* ── Section headers inside the form (packs, amount) ── */
+  .dk-qf-amount-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 14px 0 8px
+  }
+
+  .dk-qf-amount-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a
+  }
+
+  .dk-qf-amount-hint {
+    font-size: 11px;
+    font-weight: 500;
+    color: #94a3b8
+  }
+
+  /* The amount is derived, never typed: show it plainly so nobody tries. */
+  .dk-page .dk-qf-input-locked {
+    background: #f7f8fa;
+    color: #0f172a;
+    font-weight: 700;
+    cursor: default
+  }
+
+  .dk-page .dk-qf-input-locked:focus {
+    border-color: #e2e8f0;
+    box-shadow: none
+  }
+
+  .dk-qf-error {
+    display: none;
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: #ef4444
+  }
+
+  .dk-qf-error.show {
+    display: block
+  }
+
+  .dk-qf-field-error {
+    display: none;
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: #ef4444
+  }
+
+  .dk-qf-field-error.show {
+    display: block
+  }
+
+  /* ── Crowdfunding progress (free-amount pack only) ── */
+  .dk-qf-crowd {
+    margin-top: 14px;
+    padding: 12px 13px 11px;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    background: #f0fdf4
+  }
+
+  .dk-qf-crowd-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px
+  }
+
+  .dk-qf-crowd-title {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #15803d
+  }
+
+  .dk-qf-crowd-bar {
+    position: relative;
+    height: 8px;
+    margin-top: 8px;
+    border-radius: 999px;
+    background: #dcfce7;
+    overflow: hidden
+  }
+
+  /* Donations already received towards this home. */
+  .dk-qf-crowd-fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    border-radius: 999px;
+    background: #16a34a
+  }
+
+  .dk-qf-crowd-text {
+    margin: 7px 0 0;
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: #166534
+  }
+
+  .dk-qf-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px dashed #e2e8f0
+  }
+
+  .dk-qf-total-label {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+    /* Without this the label is the only flex item that can shrink, so a long
+       figure crushes it to one word per line instead of wrapping normally. */
+    min-width: 0
+  }
+
+  .dk-qf-total-calc {
+    display: block;
+    margin-top: 2px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #009dff
+  }
+
+  .dk-qf-total-calc:empty {
+    display: none
+  }
+
+  .dk-qf-total-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    white-space: nowrap;
+    text-align: right
+  }
+
+  .dk-qf-donate {
+    width: 100%;
+    margin-top: 14px;
+    height: 52px;
+    border: none;
+    border-radius: 10px;
+    background: #009dff;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s, box-shadow .2s, transform .15s
+  }
+
+  .dk-qf-donate:hover {
+    background: #0083d6;
+    box-shadow: 0 6px 20px rgba(0, 157, 255, .32)
+  }
+
+  .dk-qf-donate:active {
+    transform: translateY(1px)
+  }
+
+  .dk-qf-donate:disabled,
+  .dk-qf-donate.is-submitting {
+    background: #b8d9f5;
+    cursor: not-allowed;
+    transform: none
+  }
+
+  .dk-qf-note {
+    margin: 10px 0 0;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: #94a3b8;
+    text-align: center
+  }
+
+  /* ── Body sections ── */
+  .dk-body {
+    margin-top: 48px
+  }
+
+  .dk-section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+    margin-bottom: 16px
+  }
+
+  .dk-desc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start
+  }
+
+  .dk-tagline {
+    font-size: 13px;
+    font-weight: 700;
+    color: #009dff;
+    margin: 0 0 6px;
+    letter-spacing: .5px;
+    text-transform: uppercase
+  }
+
+  .dk-section-heading {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin: 0 0 16px;
+    line-height: 1.3
+  }
+
+  .dk-description {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #555
+  }
+
+  .dk-description p {
+    margin: 0 0 14px
+  }
+
+  .dk-description strong {
+    color: #0f172a
+  }
+
+  .dk-list {
+    margin: 0;
+    padding: 0;
+    list-style: none
+  }
+
+  .dk-list li {
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: #555
+  }
+
+  .dk-list li::before {
+    content: "✔";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #009dff;
+    font-weight: 700
+  }
+
+  /* ── Card grids: gallery, other causes ── */
+  .dk-causes {
+    margin-top: 20px
+  }
+
+  .dk-gallery-heading {
+    font-size: 13px;
+    font-weight: 700;
+    color: #009dff;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin: 0 0 6px
+  }
+
+  .dk-gallery-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin: 0 0 20px
+  }
+
+  /* Gallery carousel: same cards as before, now on rails. No arrows - it is
+     drag/swipe plus dots, and the half slide on the right hints at more. */
+  .dk-gallery-wrap {
+    position: relative;
+    padding: 0 0 34px
+  }
+
+  .dk-gallery-wrap .swiper {
+    overflow: hidden;
+    padding-bottom: 4px
+  }
+
+  .dk-gallery-wrap .swiper-slide {
+    height: auto
+  }
+
+  .dk-gallery-wrap .swiper-pagination {
+    bottom: 0
+  }
+
+  .dk-gallery-wrap .swiper-pagination-bullet {
+    background: #cbd5e1;
+    width: 7px;
+    height: 7px;
+    margin: 0 4px;
+    opacity: 1
+  }
+
+  .dk-gallery-wrap .swiper-pagination-bullet-active {
+    background: #ff6600;
+    transform: scale(1.25)
+  }
+
+  .dk-cause-card {
+    display: block;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    text-decoration: none;
+    transition: transform .2s, box-shadow .2s
+  }
+
+  .dk-cause-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12)
+  }
+
+  .dk-cause-card img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    display: block;
+    background: #eef2f7
+  }
+
+  .dk-cause-card-body {
+    padding: 12px 14px 14px
+  }
+
+  .dk-cause-card-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.35;
+    margin: 0 0 4px
+  }
+
+  .dk-cause-card-amount {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ff6600;
+    margin: 0
+  }
+
+  /* ── Recent donors ── */
+  .dk-donors {
+    margin: 20px 0 80px;
+  }
+
+  /* Two rows deep, filling top-to-bottom then spilling into the next column, so
+     six donors lay out as three columns and the rail scrolls left to right.
+     overflow-y stays hidden: only the horizontal axis may move. */
+  .dk-donor-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(2, auto);
+    grid-auto-columns: minmax(200px, 1fr);
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    padding-bottom: 6px
+  }
+
+  .dk-donor-grid::-webkit-scrollbar {
+    height: 4px
+  }
+
+  .dk-donor-grid::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px
+  }
+
+  /* Name over amount: at half width a side-by-side row truncates the name to
+     almost nothing. */
+  .dk-donor {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    scroll-snap-align: start
+  }
+
+  .dk-donor-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+  }
+
+  .dk-donor-amount {
+    flex: 0 0 auto;
+    font-size: 14px;
+    font-weight: 800;
+    color: #009dff
+  }
+
+  .dk-empty {
+    font-size: 14px;
+    color: #94a3b8;
+    margin: 0
+  }
+
+  /* ── Lede line under a section heading ── */
+  .dk-lede {
+    max-width: 720px;
+    margin: 10px 0 0;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #64748b
+  }
+
+  /* ── How the donation travels ── */
+  .dk-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-top: 24px
+  }
+
+  .dk-step {
+    padding: 20px 18px;
+    border-radius: 14px;
+    background: #f7fbff;
+    border: 1px solid #e2eefb
+  }
+
+  .dk-step-no {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #009dff;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800
+  }
+
+  .dk-step-title {
+    margin-top: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a
+  }
+
+  .dk-step-text {
+    margin: 6px 0 0;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #64748b
+  }
+
+  /* ── FAQ ──
+     Plain <details>, so it opens with no JavaScript. */
+  .dk-faq {
+    margin-top: 22px;
+    border-top: 1px solid #eef2f7
+  }
+
+  .dk-faq-item {
+    border-bottom: 1px solid #eef2f7
+  }
+
+  .dk-faq-item summary {
+    padding: 16px 34px 16px 0;
+    position: relative;
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #0f172a;
+    cursor: pointer;
+    list-style: none
+  }
+
+  .dk-faq-item summary::-webkit-details-marker {
+    display: none
+  }
+
+  .dk-faq-item summary::after {
+    content: "+";
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    font-weight: 600;
+    color: #009dff
+  }
+
+  .dk-faq-item[open] summary::after {
+    content: "–"
+  }
+
+  .dk-faq-item summary:hover {
+    color: #009dff
+  }
+
+  .dk-faq-item p {
+    margin: 0 0 18px;
+    padding-right: 34px;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: #64748b
+  }
+
+  /* ── Responsive ──
+     One template serves both devices here (the generic causes-detail page
+     ships a separate mobile file), so the hero has to fold on its own. */
+  @media (max-width: 1100px) {
+    .dk-hero {
+      grid-template-columns: 1fr;
+      gap: 24px
+    }
+
+    .dk-ask-img {
+      height: 92px
+    }
+
+    .dk-steps {
+      grid-template-columns: repeat(2, 1fr)
+    }
+
+    .dk-info {
+      position: static
+    }
+
+    .dk-trust {
+      grid-template-columns: repeat(2, 1fr)
+    }
+
+    .dk-desc-grid {
+      grid-template-columns: 1fr;
+      gap: 28px
+    }
+
+    .dk-slider-wrap .slide-content img {
+      height: 360px
+    }
+  }
+
+  @media (max-width: 640px) {
+    .dk-page {
+      padding: 40px 16px 44px
+    }
+
+    .dk-steps {
+      grid-template-columns: 1fr
+    }
+
+    .dk-info {
+      padding: 20px 16px
+    }
+
+    .dk-cause-name {
+      font-size: 22px
+    }
+
+    .dk-qf-grid {
+      grid-template-columns: 1fr
+    }
+
+    .dk-pack img {
+      height: 92px
+    }
+
+    .dk-page #nepalcount {
+      padding-right: 186px
+    }
+
+    .dk-qf-inchip {
+      min-width: 34px;
+      padding: 0 7px;
+      font-size: 11.5px
+    }
+
+    .dk-pack-cap {
+      padding: 16px 4px 6px
+    }
+
+    .dk-pack-amount {
+      font-size: 12px
+    }
+
+    .dk-ask-grid {
+      grid-template-columns: 1fr;
+      gap: 10px
+    }
+
+    .dk-ask {
+      flex-direction: row
+    }
+
+    .dk-ask-img {
+      flex: 0 0 96px;
+      width: 96px;
+      height: auto;
+      min-height: 96px;
+      align-self: stretch
+    }
+
+    .dk-ask-body {
+      padding: 10px 12px
+    }
+
+    .dk-ask-amount {
+      margin-top: 2px;
+      padding-top: 0
+    }
+    .dk-gallery-wrap {
+      padding: 0 0 0px
+    }
+
+    .dk-hero-panel {
+      padding: 10px;
+    }
+
+    .dk-hero-panel h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+      line-height: 1.3
+    }
+
+    .dk-hero-panel p {
+      font-size: 13px;
+      line-height: 1.4
+    }
+
+    .dk-ask-grid {
+      margin-top: 14px
+    }
+
+    .dk-slider-wrap .slide-content img {
+      height: 240px
+    }
+  }

@@ -1,0 +1,95 @@
+/* Volunteer Login Page Custom Styles */
+
+.volunteer-login-main {
+    background-color: var(--bg-color, #fffaf3);
+    min-height: 100vh;
+}
+
+.uicon {
+    margin-bottom: 24px;
+}
+
+.nav_links {
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.mob-version {
+    display: none;
+}
+
+@media screen and (max-width: 1000px) {
+    .desk-version {
+        display: none !important;
+    }
+    .mob-version {
+        display: flex !important;
+    }
+}
+
+/* Password eye icon styles */
+.secure-input {
+    position: relative;
+}
+
+.secure-input input {
+    padding-right: 42px; /* space for eye icon */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    width: 24px;
+    height: 24px;
+}
+
+.toggle-password:hover {
+    color: #333;
+}
+
+/* Toast Notification */
+.volunteer-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    animation: fadeInSlideUp 0.3s ease forwards;
+}
+
+.volunteer-toast.success {
+    background-color: #10b981;
+}
+
+.volunteer-toast.error {
+    background-color: #ef4444;
+}
+
+.volunteer-toast.info {
+    background-color: #3b82f6;
+}
+
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

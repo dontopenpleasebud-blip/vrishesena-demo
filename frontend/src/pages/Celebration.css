@@ -1,0 +1,2480 @@
+/* ==========================================================================
+   Celebration Page Styles (Birthday Cake & Meals Distribution)
+   ========================================================================== */
+
+/* ── Style Block 0 ── */
+.logo_cstm{
+  position:relative;
+}
+
+/* ── Style Block 1 ── */
+.modal { display: none; }
+  .modal.show { display: block; }
+  .dropdown-menu { display: none; }
+  .dropdown-menu.show { display: block; }
+  .collapse:not(.show) { display: none; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* mobile.min.css is lazy-loaded (media="print" -> swap on load), so the mobile
+     sidebar paints unstyled and in-flow for a moment before snapping off-screen.
+     Mirror its parked state here so it is never visible on first paint.
+     Single-class selectors only, so .active_sidebar (2 classes) still wins. */
+  @media screen and (max-width: 768px) {
+    .mobile_nav_version {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 80vw;
+      height: 100vh;
+      z-index: 1000;
+      transform: translateX(-100%);
+    }
+    .close-menu { display: none; }
+  }
+  @media screen and (min-width: 769px) {
+    .mobile_nav_version { display: none; }
+  }
+
+/* ── Style Block 2 ── */
+/* 
+   ALL STYLES BELOW THIS COMMENT ONLY APPLY ON MOBILE (≤ 768px)
+   Desktop / larger screens get ZERO styles from this file
+*/
+
+@media only screen and (max-width: 768px) {
+
+    :root {
+        --primary-text: #1d1d27;
+        --secondary-text: #788195;
+        --accent-pink: #fa578e;
+        --success-green: #25D366;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+    }
+
+    body {
+        background: #dfe1e7;
+    }
+
+    /* --- BANNER SECTION --- */
+    .banner-wrapper { padding-top: 73px; }
+
+    /* --- BANNER SECTION STYLES --- */
+    .banner-wrapper { 
+        padding-top: 73px;
+    }
+
+    /* Swiper Container Configuration */
+    .banner-swiper {
+        width: 100%;
+        padding-bottom: 15px;
+    }
+
+    /* Pagination Dots Styling */
+    .banner-swiper .swiper-pagination-bullet {
+        background: #788195;
+        opacity: 0.6;
+        width: 8px;
+        height: 8px;
+        transition: all 0.3s;
+    }
+
+    .banner-swiper .swiper-pagination-bullet-active {
+        background: #ffffff;
+        opacity: 1;
+        width: 20px;
+        border-radius: 4px;
+    }
+
+    /* Banner Card Styling */
+  /* Banner Card Styling */
+    .banner-card {
+        width: 100%;
+        border-radius: 12px; 
+        overflow: hidden; 
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); 
+        background: #fff; 
+        padding: 0;
+        display: block; 
+        cursor: pointer; /* ADD THIS LINE */
+    }
+
+    /* Image/Video Styling */
+    .full-banner-img { 
+        width: 100%; 
+        height: 250px; 
+        display: block; 
+        object-fit: cover; 
+    }
+
+    /* --- STATS CARDS CSS --- */
+    .stats-swiper { padding: 40px 10px 20px 10px !important; }
+    .stats-swiper .swiper-slide { width: 320px; height: auto; }
+    .stat-card {
+        border-radius: 20px; padding: 20px; color: #fff; height: 150px;
+        display: flex; flex-direction: column; justify-content: space-between;
+        overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        cursor: pointer;
+    }
+    .purple-card { background: linear-gradient(135deg, #8a64eb 0%, #7c52e5 100%); }
+    .red-card { background: linear-gradient(135deg, #f55252 0%, #e84343 100%); }
+    .light-blue-card { background: linear-gradient(135deg, #52a7f5 0%, #43a0e8 100%); }
+
+    .stat-header h2 { font-size: 32px; font-weight: 800; margin-bottom: 2px; }
+    .stat-header span { font-size: 18px; font-weight: 600; opacity: 0.9; display: block;line-height: 20px; }
+    .stat-footer { font-size: 13px; line-height: 1.4; font-weight: 500; opacity: 0.9; }
+
+    .stat-illustration1 { position: absolute; right: 0px; top: -20px; width: 160px; height: auto; object-fit: contain; }
+    .stat-illustration2 { position: absolute; right: 0px; top: -40px; width: 165px; height: auto; }
+    .stat-illustration3 { position: absolute; right: 0px; top: -35px; width: 187px; height: auto; }
+
+    @media (max-width: 400px) { .stats-swiper .swiper-slide { width: 85%; } }
+
+    /* --- PACKAGES SECTION --- */
+    .packages-section { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 0 0px 0; }
+    .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px; padding: 0 10px; }
+    .header-title h2 { font-size: 20px; font-weight: 700; color: var(--primary-text); margin-bottom: 0px; }
+    .header-title span { font-size: 14px; color: var(--secondary-text); font-weight: 500; }
+
+    /* Product Swiper */
+    .product-swiper { width: 100%; padding: 10px !important; }
+    .product-swiper .swiper-slide { width: 160px; }
+
+    .product-card {
+        position: relative;
+        border-radius: 20px;
+        height: 220px;
+        overflow: hidden;
+        cursor: pointer;
+        background: #eee; 
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .product-card.active {
+        box-shadow: 0 0 0 3px #009dff, 0 8px 25px rgba(0,157,255,0.3);
+        transform: scale(1.02);
+    }
+
+    .card-orange { background: linear-gradient(180deg, #ffe5c4 0%, #ffbb85 100%); }
+
+    .card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top center;
+    }
+
+    /* --- CHECKBOX STYLE --- */
+    .select-checkbox {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 20;
+        width: 28px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid #ddd;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        pointer-events: none;
+    }
+
+    .select-checkbox i {
+        font-size: 14px;
+        color: transparent; 
+        transition: color 0.2s;
+    }
+
+    /* Active State - Blue theme */
+    .product-card.active .select-checkbox {
+        background: #009dff;
+        border-color: #009dff;
+        transform: scale(1.1);
+    }
+    .product-card.active .select-checkbox i { 
+        color: #fff; 
+    }
+
+    /* Active badge on card */
+    .active-badge-card {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #009dff;
+        color: #fff;
+        font-size: 10px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 700;
+        z-index: 20;
+        display: none;
+        box-shadow: 0 2px 8px rgba(0,157,255,0.3);
+    }
+
+    .product-card.active .active-badge-card {
+        display: block;
+    }
+
+    /* --- ORIGINAL FLOATING GLASS BOX (Bottom Price Info) --- */
+    .card-info {
+        position: absolute;
+        bottom: 11px;
+        left: 5px;
+        right: 5px;
+        background: rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(0px);
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        padding: 8px;
+        border-radius: 13px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        z-index: 5;
+    }
+
+    .info-text h3 { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 0; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .price { font-size: 14px; font-weight: 700; color: #f9fa57; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+
+    /* --- PACKAGE DETAILS TAB (BELOW CARDS) --- */
+    .package-details-tab {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 10px 20px 10px;
+        display: none;
+    }
+
+    .package-details-tab.active {
+        display: block;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .details-tab-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #009dff;
+        color: #fff;
+        padding: 15px 20px;
+        border-radius: 15px 15px 0 0;
+    }
+
+    .details-tab-title {
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .details-tab-price {
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .details-tab-content {
+        background: #fff;
+        padding:10px 20px;
+        border-radius: 0 0 15px 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .details-tab-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .details-tab-list li {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 0px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .details-tab-list li:last-child {
+        border-bottom: none;
+    }
+
+    .details-tab-list li i {
+        color: #009dff;
+        font-size: 8px;
+    }
+
+    .close-details-btn {
+        width: 100%;
+        background: #f0f0f0;
+        color: #333;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 15px;
+        transition: all 0.2s;
+    }
+
+    .close-details-btn:hover {
+        background: #e0e0e0;
+    }
+
+    /* --- VIDEO SECTION --- */
+    .video-section { width: 100%; max-width: 1100px;}
+    .video-header { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; margin-bottom: 0px; }
+    .video-header h2 { font-size: 20px; font-weight: 700; color: var(--primary-text); margin: 0; }
+    .social-icons-header { display: flex; gap: 10px; }
+    .social-icons-header i { font-size: 20px; color: var(--primary-text); cursor: pointer; transition: color 0.3s; }
+    .social-icons-header i:hover { color: var(--accent-pink); }
+
+    .video-swiper { width: 100%; padding: 10px 10px 10px 10px !important; }
+    .video-swiper .swiper-slide { width: 245px !important; }
+    .video-thumbnail-card {
+        width: 250px; height: 150px; border-radius: 15px; overflow: hidden; position: relative;
+        cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .video-thumbnail-card video { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+        transition: transform 0.3s ease; 
+    }
+    .video-thumbnail-card:hover video { 
+        transform: scale(1.1); 
+    }
+
+    .reel-icon { position: absolute; top: 8px; right: 8px; color: #fff; font-size: 12px; z-index: 2; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+    .play-overlay {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 35px; height: 35px; background: rgba(255, 255, 255, 0.9); border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; z-index: 2; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        pointer-events: none;
+    }
+    .play-overlay i { color: var(--primary-text); font-size: 14px; margin-left: 2px; }
+    .video-gradient {
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3)); z-index: 1;
+        pointer-events: none;
+    }
+    
+    @keyframes fadeInScaleUp {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .video-modal-overlay {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(8px);
+        z-index: 10000; 
+        justify-content: center; 
+        align-items: center; 
+        opacity: 0; 
+        transition: opacity 0.3s ease;
+        padding: 20px;
+    }
+    .video-modal-overlay.active { display: flex; opacity: 1; }
+    
+    .modal-content-wrapper { 
+        position: relative; 
+        width: 100%; 
+        max-width: 95vw;  
+        max-height: 90vh; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        animation: fadeInScaleUp 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    .modal-content{
+        height: 720px;
+    }
+    .wizard-step{
+        margin-bottom: 10px !important;
+    }
+    .modal-close-btn { 
+        position: fixed;
+        top: 15px; 
+        right: 20px; 
+        color: #000; 
+        font-size: 24px; 
+        cursor: pointer; 
+        background: rgba(255, 255, 255, 0.8); 
+        border: none; 
+        z-index: 10001;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s, background 0.2s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .modal-close-btn:hover {
+        transform: scale(1.1);
+        background: #fff;
+    }
+
+    #videoPlayer {
+        width: 100%;
+        height: 100%;
+        max-height: 90vh;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        background: #000;
+        outline: none;
+    }
+
+    /* ol, ul{
+        padding-left: 0 !important;
+    } */
+
+    /* --- Base Button Styling --- */
+    .wizard_P_N_btns {
+        background: #009dff;
+        color: white;
+        padding: 12px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .wizard_P_N_btns:hover {
+        background: #007acc;
+        color: white;
+        text-decoration: none;
+    }
+
+    /* --- Logic to Hide on Desktop / Show Fixed on Mobile --- */
+    .mobile-only {
+        display: block;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 99;
+        background: #fff;
+        box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+        padding: 8px 0;
+        text-align: center;
+    }
+
+    .mobile-only .wizard_P_N_btns {
+        width: 90%;
+        max-width: 400px;
+        margin: 0 auto;
+        font-size: 18px;
+        padding: 14px 0;
+        border-radius: 8px;
+        background: #009dff;
+        color: #fff;
+        font-weight: 700;
+        box-shadow: 0 2px 8px rgba(0,157,255,0.12);
+        display: inline-block;
+    }
+
+    .bottom-nav{
+        display: none;
+    }
+    .moblie-view{
+        display: block !important;
+    }
+    .desktop-view{
+        display: none;
+    }
+ 
+
+}
+
+/* --- FREE WISH VIDEO BADGE --- */
+.free-wish-badge {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: #fff;
+    font-size: 9px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.4);
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+.free-wish-badge i {
+    font-size: 8px;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Desktop free wish badge positioning */
+.desktop-free-wish {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: auto;
+    bottom: auto;
+    font-size: 11px;
+    padding: 6px 12px;
+    z-index: 10;
+}
+
+/* --- DONATE NOW BUTTON BLINK ANIMATION --- */
+@keyframes btnBlink {
+    0%, 100% { transform: scale(1); box-shadow: 0 2px 8px rgba(0,157,255,0.12); }
+    50% { transform: scale(1.03); box-shadow: 0 4px 20px rgba(0,157,255,0.4); }
+}
+
+.package-selected {
+    animation: btnBlink 1.2s ease-in-out infinite;
+    background: #009dff !important;
+}
+
+/* --- BOUNCING ARROW GUIDE --- */
+@keyframes bounceDown {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    50% { transform: translateY(10px); opacity: 0.7; }
+}
+
+.donate-arrow-guide {
+    display: none;
+    text-align: center;
+    padding: 8px 0 0;
+    color: red;
+    font-size: 14px;
+    font-weight: 600;
+    animation: bounceDown 1s ease-in-out infinite;
+}
+
+.donate-arrow-guide i {
+    font-size: 20px;
+    display: block;
+    margin-top: 2px;
+}
+
+.donate-arrow-guide.show {
+    display: block;
+}
+
+.moblie-view{
+    display: none;
+}
+
+/* ── Style Block 3 ── */
+/* --- Banner Section Container --- */
+        .desktop-banner-section {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            /* max-width: 1920px; Optional: constrain max width for very large screens */
+            margin: 0 auto;
+        }
+
+        /* --- Header --- */
+        .desktop-main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            position: relative;
+            z-index: 10; /* Ensure header is on top */
+            width: 100%;
+        }
+
+        .desktop-main-header .desktop-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .desktop-main-header .desktop-logo .desktop-logo-icon {
+            width: 35px;
+            height: 35px;
+            background-color: #FFD700; /* Yellow background for placeholder 'h' */
+            border-radius: 8px; /* Slightly rounded square */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff; /* White 'h' */
+        }
+        .desktop-main-header .desktop-logo h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .desktop-main-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 30px;
+        }
+
+        .desktop-main-nav a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            padding: 5px 0;
+            transition: color 0.3s ease;
+        }
+
+        .desktop-main-nav a:hover,
+        .desktop-main-nav a.active { /* For the "Почему мы?" link */
+            color: #FFD700; /* Yellow hover/active state */
+        }
+
+        .desktop-messenger-button {
+            background-color: #2D3E4E; /* Dark blue/black */
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            line-height: 1.2;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Subtle shadow as in original */
+        }
+
+        .desktop-messenger-button:hover {
+            background-color: #1a252f;
+        }
+
+        .desktop-messenger-button .desktop-messenger-icon {
+            /* Placeholder for the Facebook Messenger icon */
+            width: 20px;
+            height: 20px;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg " viewBox="0 0 24 24" fill="%23ffffff"%3E%3Cpath d="M12 0C5.373 0 0 4.908 0 11c0 3.328 1.583 6.305 4.092 8.356L2.3 24l5.068-1.554C8.98 22.844 10.457 23 12 23c6.627 0 12-4.908 12-11S18.627 0 12 0zm1.707 15.293L11 12.586V10c0-.447-.39-.811-.87-.811H8.384c-.48 0-.87.364-.87.811v3.25l-2.707 2.707a.997.997 0 01-1.414 0c-.39-.39-1.024 0-1.414L7 11.828V8c0-.552.448-1 1-1h6c.552 0 1 .448 1 1v4.586l2.293 2.293a.997.997 0 01-1.414 1.414z"%3E%3C/path%3E%3C/svg%3E');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .desktop-messenger-button div {
+            text-align: left;
+        }
+
+        .desktop-messenger-button span {
+            font-size: 12px;
+            opacity: 0.8;
+            display: block;
+        }
+
+        .desktop-messenger-button strong {
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+        }
+
+        /* --- Main Banner Content Area --- */
+        .desktop-banner-content {
+            flex-grow: 1; /* Allow content to take remaining height */
+            display: flex;
+            position: relative;
+            z-index: 2; /* Ensure content is above the yellow blob */
+        }
+
+        /* Yellow Blob Background Shape */
+        .desktop-yellow-blob {
+            position: absolute;
+            top: 128px;
+            right: 0;
+            height: 88%; /* Spans full height of banner-content */
+            width: 65%; /* Occupy roughly the right 70% of the screen */
+            background-color: #e0a6ab; /* Bright yellow */
+            /* Complex border-radius to create the organic left curve */
+            border-top-left-radius: 40% 100%; /* Horizontal / Vertical */
+            border-bottom-left-radius: 60% 100%;
+            /* Rotate and translate to position it correctly, spilling off-screen right/top */
+            transform: translateX(20%) rotate(-7deg); /* Push right, rotate slightly */
+            transform-origin: bottom left; /* Rotate around this point */
+            z-index: 1; /* Behind the main content, but above body background */
+            overflow: hidden; /* To contain the confetti dots and clip the image */
+        }
+
+        /* --- Left Panel (Text & Form) --- */
+        .desktop-left-panel {
+            flex: 1; /* Takes available space */
+            padding: 80px 40px 40px 80px; /* Adjust padding to match image */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center content vertically */
+            position: relative; /* For local decorative dots */
+            text-align: left;
+            max-width: 50%;
+            min-width: 500px; /* Prevent text from becoming too narrow */
+        }
+
+        .desktop-left-panel h2 {
+            font-family: 'Caveat', cursive; /* Handwritten-style font */
+            font-size: 4.5em; /* Large size */
+            line-height: 1.1;
+            margin-bottom: 20px;
+            color: #222;
+            font-weight: 700;
+        }
+
+        .desktop-left-panel h2 .desktop-stars {
+            color: #FFC000; /* A slightly warmer yellow/orange for stars */
+            display: inline-block; /* Prevent line break */
+            margin-left: 5px; /* Space between text and stars */
+        }
+
+        .desktop-left-panel p {
+            font-size: 1.15em;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            max-width: 680px; /* Constrain paragraph width */
+            color: #555;
+        }
+
+        .desktop-input-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .desktop-phone-input-wrapper {
+            display: flex;
+            align-items: center;
+            background-color: #f7f7f7;
+            border-radius: 50px;
+            padding: 12px 20px; /* Slightly more padding */
+            border: 1px solid #eee;
+            transition: border-color 0.3s ease;
+        }
+
+        .desktop-phone-input-wrapper:hover {
+            border-color: #FFD700;
+        }
+
+        .desktop-phone-input-wrapper .desktop-flag-icon {
+            font-size: 20px;
+            margin-right: 10px;
+            line-height: 1;
+        }
+
+        .desktop-phone-input-wrapper input[type="tel"] {
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            outline: none;
+            color: #333;
+            width: 180px;
+            padding: 0;
+        }
+
+        .desktop-primary-button {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 15px 80px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600; /* Bold, but not too heavy */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .desktop-primary-button:hover {
+            background-color: #f0c300;
+        }
+
+        /* --- Right Panel (Image) --- */
+        .desktop-right-panel {
+            flex: 1; /* Takes remaining space */
+            position: relative; /* For absolute positioning of the image */
+            display: flex;
+            justify-content: center; /* Center the image horizontally */
+            align-items: flex-end; /* Align image to the bottom */
+            overflow: hidden; /* Crucial to clip the image within its visual boundaries */
+            z-index: 2; /* Ensure image is above the yellow blob */
+            padding-bottom: 50px; /* Space from the bottom of the section */
+            padding-right: 50px; /* Space from the right edge */
+        }
+
+        .desktop-right-panel img {
+            position: absolute;
+            bottom: 90px; /* Adjust to make it 'sit' on the blob's curve */
+            left: 50%;
+            transform: translateX(-50%); /* Center horizontally */
+            width: 100%;
+            height: auto;
+            max-height: 105%; /* Allow it to slightly exceed right-panel height for visual effect */
+            object-fit: contain;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15)); /* Subtle shadow to lift image */
+        }
+
+        /* --- Decorative Dots --- */
+        .desktop-decoration-dot {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.8;
+            z-index: 5; /* Ensure dots are visible over content */
+        }
+
+        /* Dots in the white area (left panel) - positioned relative to .desktop-banner-section */
+        .desktop-decoration-dot.desktop-white-area.desktop-yellow-large {
+            background-color: #FFD700;
+            width: 30px;
+            height: 30px;
+            top: 25%;
+            left: 8%;
+        }
+        .desktop-decoration-dot.desktop-white-area.desktop-green-small {
+            background-color: #90EE90; /* Light green */
+            width: 15px;
+            height: 15px;
+            top: 40%;
+            left: 17%;
+        }
+        .desktop-decoration-dot.desktop-white-area.desktop-green-medium {
+            background-color: #3CB371; /* MediumSeaGreen */
+            width: 25px;
+            height: 25px;
+            top: 80%;
+            left: 20%;
+        }
+
+        /* Confetti dots on the yellow blob background - positioned relative to .desktop-yellow-blob */
+        .desktop-yellow-blob .desktop-decoration-dot.desktop-confetti {
+            width: 8px;
+            height: 8px;
+            opacity: 0.9;
+            z-index: 1; /* Inside blob, lower z-index than image */
+        }
+        .desktop-yellow-blob .desktop-decoration-dot.desktop-confetti.desktop-purple { background-color: #DDA0DD; top: 15%; left: 10%; }
+        .desktop-yellow-blob .desktop-decoration-dot.desktop-confetti.desktop-red { background-color: #FF0000; top: 10%; right: 15%; left: auto; }
+        .desktop-yellow-blob .desktop-decoration-dot.desktop-confetti.desktop-blue { background-color: #0000FF; top: 25%; right: 5%; left: auto; }
+        .desktop-yellow-blob .desktop-decoration-dot.desktop-confetti.desktop-orange { background-color: #FFA500; top: 40%; right: 20%; left: auto; }
+        .desktop-yellow-blob .desktop-decoration-dot.desktop-confetti.desktop-green2 { background-color: #008000; top: 55%; right: 10%; left: auto; }
+        .desktop-yellow-blob .desktop-decoration-dot.desktop-confetti.desktop-purple2 { background-color: #800080; top: 70%; right: 15%; left: auto; }
+        .desktop-yellow-blob .desktop-decoration-dot.desktop-confetti.desktop-yellow2 { background-color: #FFD700; top: 85%; right: 25%; left: auto; }
+        .desktop-yellow-blob .desktop-decoration-dot.desktop-confetti.desktop-cyan { background-color: #00FFFF; top: 30%; left: 20%; }
+        .desktop-yellow-blob .desktop-decoration-dot.desktop-confetti.desktop-magenta { background-color: #FF00FF; top: 60%; left: 5%; }
+
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 1200px) {
+            .desktop-left-panel {
+                padding: 60px 30px 30px 60px;
+                max-width: 55%;
+                min-width: unset;
+            }
+            .desktop-left-panel h2 {
+                font-size: 3.8em;
+            }
+            .desktop-yellow-blob {
+                width: 75%; /* Adjust width for smaller screens */
+                transform: translateX(15%) rotate(-6deg);
+            }
+            .desktop-right-panel img {
+                bottom: -10px;
+                max-height: 95%;
+            }
+            .desktop-main-header {
+                padding: 15px 30px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .desktop-main-header {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+            .desktop-main-nav {
+                order: 3; /* Move nav below logo and messenger button */
+                width: 100%;
+                text-align: center;
+            }
+            .desktop-main-nav ul {
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .desktop-banner-content {
+                flex-direction: column;
+            }
+            .desktop-left-panel, .desktop-right-panel {
+                max-width: 100%;
+                flex: none;
+                padding: 40px 20px;
+                text-align: center;
+            }
+            .desktop-left-panel {
+                order: 2; /* Text below image on mobile */
+            }
+            .desktop-left-panel p {
+                max-width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .desktop-left-panel h2 {
+                font-size: 2.8em;
+            }
+            .desktop-input-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .desktop-phone-input-wrapper, .desktop-primary-button {
+                width: 100%;
+                max-width: 320px; /* Constrain width */
+                margin: 0 auto;
+            }
+            .desktop-right-panel {
+                order: 1; /* Image above text on mobile */
+                min-height: 350px; /* Give image section some height */
+                padding-bottom: 20px; /* Less padding on mobile */
+                padding-right: 0;
+            }
+            .desktop-right-panel img {
+                position: relative; /* Make it flow normally within right-panel */
+                bottom: 0;
+                transform: translateX(-50%); /* Still center */
+                max-width: 90%;
+                max-height: 100%;
+            }
+
+            .desktop-yellow-blob {
+                width: 100%;
+                height: 100%; /* Spans full height of banner-content */
+                transform: none; /* No rotation or translate on mobile */
+                border-radius: 0; /* No complex curve for simplicity */
+                top: 80px; /* Adjust to start below header */
+                height: calc(100% - 80px); /* Fill remaining height below header */
+                min-height: 400px;
+            }
+            .desktop-yellow-blob .desktop-decoration-dot.desktop-confetti {
+                display: none; /* Hide confetti on mobile for performance/simplicity */
+            }
+            .desktop-decoration-dot.desktop-white-area {
+                display: none; /* Hide for simplicity on mobile */
+            }
+        }
+
+        @media (max-width: 600px) {
+            
+            
+            .desktop-messenger-button {
+                padding: 8px 12px;
+                gap: 8px;
+            }
+            .desktop-messenger-button strong {
+                font-size: 12px;
+            }
+            .desktop-messenger-button span {
+                font-size: 10px;
+            }
+            .desktop-left-panel h2 {
+                font-size: 2.2em;
+            }
+            .desktop-left-panel p {
+                font-size: 1em;
+            }
+        }
+
+        /* NEW SECTION: Our Programs Styles */
+        .desktop-programs-section {
+            background-color: #ffffff; /* White background as in the image */
+            padding: 100px 40px; /* Adjust padding as needed */
+            text-align: center;
+        }
+
+        .desktop-programs-header {
+            margin-bottom: 60px; /* Space below header */
+        }
+
+        .desktop-programs-title {
+            font-size: 3.2em; /* Large title */
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .desktop-programs-subtitle {
+            font-size: 1.1em;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .desktop-program-cards-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px; /* Space between cards */
+             /* Allow cards to wrap on smaller screens */
+            max-width: 1200px; /* Max width for cards container */
+            margin: 0 auto;
+        }
+
+        .desktop-program-card {
+            background-color: #fff;
+            border-radius: 15px; /* Rounded corners for cards */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+            overflow: hidden; /* Ensure image corners are rounded with card */
+            width: calc(33.333% - 20px); /* Three cards per row with gap, adjust for exact fit */
+            flex-grow: 1; /* Allow cards to grow if space available */
+            min-width: 280px; /* Minimum width for card before wrapping */
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .desktop-program-card:hover {
+            transform: translateY(-5px); /* Lift card on hover */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .desktop-card-image-wrapper {
+            width: 100%;
+            height: 200px; /* Fixed height for images */
+            overflow: hidden;
+            border-top-left-radius: 15px; /* Match card radius */
+            border-top-right-radius: 15px; /* Match card radius */
+        }
+
+        .desktop-card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cover the area, cropping if necessary */
+            display: block;
+        }
+
+        .desktop-program-card .desktop-card-content { /* A div to wrap title, description, button */
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* Allow content area to grow */
+        }
+
+        .desktop-program-card .desktop-card-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .desktop-program-card .desktop-card-description {
+            font-size: 0.95em;
+            color: #777;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex-grow: 1; /* Pushes button to the bottom */
+            height: 100px;
+            overflow-y: auto;
+        }
+
+        .desktop-card-button {
+            background-color: #007bff; /* Dark background as in the messenger button */
+            color: #fff;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px; /* Fully rounded button */
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: inline-flex; /* To allow icon and text to be aligned */
+            align-items: center;
+            justify-content: center;
+             /* Only take up content width */
+            text-decoration: none; /* For <a> tag */
+            position: relative; /* For the pseudo-element icon */
+            padding-left: 45px; /* Make space for the icon */
+            padding-right: 20px; /* Adjust as needed */
+        }
+
+       
+
+        .desktop-card-button:hover {
+            background-color: #007bff; /* Yellow hover effect */
+            color: #ffffff; /* Dark text on yellow hover */
+        }
+        .desktop-card-button:hover::before {
+            background-color: #333; /* Dark dot on yellow hover */
+        }
+
+
+        /* Media Queries for the new section */
+        @media (max-width: 992px) {
+            .desktop-programs-section {
+                padding: 60px 20px;
+            }
+            .desktop-program-cards-container {
+                gap: 20px;
+            }
+            .desktop-program-card {
+                width: calc(50% - 15px); /* Two cards per row */
+            }
+            .desktop-programs-title {
+                font-size: 2.5em;
+            }
+            .desktop-programs-subtitle {
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .desktop-program-card {
+                width: 90%; /* One card per row, with some margin */
+                max-width: 400px; /* Prevent cards from becoming too wide on smaller screens */
+            }
+            .desktop-program-cards-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* NEW SECTION: Birthday Celebration Section Styles */
+        .desktop-birthday-section {
+            background-color: #fcf9f4; /* Light off-white background from image */
+            padding: 80px 40px;
+            text-align: center;
+            position: relative; /* For fixed elements within this context or general positioning */
+             /* Ensure it takes full viewport height for fixed elements to appear */
+        }
+
+        .desktop-birthday-header {
+            margin-bottom: 50px;
+        }
+
+        .desktop-birthday-title {
+            font-family: 'Caveat', cursive; /* Script font for the title */
+            font-size: 4em; /* Large size */
+            color: #333;
+            margin-bottom: 10px;
+            position: relative; /* For the party hat icon */
+            display: inline-block; /* To contain the hat */
+            line-height: 1; /* Adjust line height for script font */
+        }
+
+        .desktop-birthday-title::before {
+            content: '🎂'; /* Party hat emoji */
+            position: absolute;
+            top: -15px; /* Adjust position */
+            left: -20px; /* Adjust position */
+            font-size: 0.5em; /* Scale hat size relative to title */
+            transform: rotate(-15deg); /* Slight rotation */
+        }
+
+        .desktop-birthday-subtitle {
+            font-size: 1.1em;
+            color: #555;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .desktop-birthday-cards-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px; /* Space between cards */
+            flex-wrap: wrap;
+            margin-top: 50px;
+            margin-bottom: 60px; /* Space above donate button */
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .desktop-birthday-card {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            width: calc(25% - 19px); /* Four cards per row */
+            flex-grow: 1;
+            min-width: 250px; /* Minimum width before wrapping */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .desktop-birthday-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .desktop-card-media-wrapper {
+            width: 100%;
+            height: 200px; /* Fixed height for media */
+            overflow: hidden;
+            position: relative; /* For play icon overlay */
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            cursor: pointer; /* Indicate it's clickable */
+        }
+
+        .desktop-card-media {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .desktop-play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background-color: #fff; /* Semi-transparent background */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            /* pointer-events: none; Removed: now the icon itself is clickable */
+        }
+
+       
+
+        .desktop-birthday-card .desktop-card-text {
+            padding: 20px;
+            font-size: 0.95em;
+            color: #555;
+            flex-grow: 1; /* Push text content up, button down */
+            display: flex;
+            align-items: center; /* Center text vertically if needed */
+            justify-content: center;
+        }
+
+        .desktop-birthday-donate-button {
+            background-color: #007bff; /* Blue button as in image */
+            color: #fff;
+            padding: 15px 80px;
+            border: none;
+            border-radius: 20px; /* Slightly rounded corners */
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none; /* For <a> tag */
+            display: inline-block;
+        }
+
+        .desktop-birthday-donate-button:hover {
+            background-color: #0056b3;
+            color: #ffffff;
+        }
+
+        /* Floating "Donate Monthly" button */
+        .desktop-donate-monthly-button {
+            position: fixed;
+            right: -55px; /* Adjust to show part of the button */
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg); /* Rotate for vertical text */
+            background-color: #ff6600; /* Orange color */
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 8px 8px 0 0; /* Rounded top corners after rotation */
+            font-size: 1em;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 100; /* Ensure it's on top */
+            transition: right 0.3s ease;
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+
+        .desktop-donate-monthly-button:hover {
+            right: 0; /* Slide in on hover */
+        }
+        .desktop-donate-monthly-button::after {
+            content: '⭐'; /* Star icon as in image */
+            margin-left: 8px;
+            font-size: 1em;
+            vertical-align: middle;
+        }
+
+        /* Floating Notification Bubble */
+        .desktop-notification-bubble {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4a90e2; /* Blue color */
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100; /* Ensure it's on top */
+            white-space: nowrap;
+        }
+
+        /* Media Queries for Birthday section */
+        @media (max-width: 1200px) {
+            .desktop-birthday-card {
+                width: calc(33.333% - 19px); /* 3 cards per row */
+            }
+        }
+
+        @media (max-width: 992px) {
+            .desktop-birthday-section {
+                padding: 60px 20px;
+            }
+            .desktop-birthday-title {
+                font-size: 3em;
+            }
+            .desktop-birthday-title::before {
+                font-size: 0.4em;
+                top: -10px;
+                left: -15px;
+            }
+            .desktop-birthday-subtitle {
+                font-size: 0.95em;
+            }
+            .desktop-birthday-cards-container {
+                gap: 20px;
+                margin-top: 30px;
+                margin-bottom: 40px;
+            }
+            .desktop-birthday-card {
+                width: calc(50% - 15px); /* 2 cards per row */
+            }
+            .desktop-birthday-card .desktop-card-media-wrapper {
+                height: 180px;
+            }
+            .desktop-donate-monthly-button {
+                right: -65px; /* Adjust for smaller screens */
+                padding: 12px 25px;
+                font-size: 0.9em;
+            }
+            .desktop-notification-bubble {
+                top: 15px;
+                right: 15px;
+                padding: 6px 12px;
+                font-size: 0.8em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .desktop-birthday-card {
+                width: 90%; /* 1 card per row */
+                max-width: 350px;
+            }
+            .desktop-birthday-card .desktop-card-media-wrapper {
+                height: 160px;
+            }
+            .desktop-birthday-title {
+                font-size: 2.5em;
+            }
+            .desktop-birthday-title::before {
+                font-size: 0.3em;
+                top: -8px;
+                left: -12px;
+            }
+            .desktop-donate-monthly-button {
+                display: none; /* Hide on very small screens if it takes too much space */
+            }
+            .desktop-notification-bubble {
+                display: none; /* Hide on very small screens */
+            }
+        }
+
+        /* NEW VIDEO MODAL STYLES */
+        .desktop-video-modal-overlay {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .desktop-video-modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 80%; /* Width of the modal */
+            max-width: 900px; /* Max width for larger screens */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* For rounded corners */
+        }
+
+        .desktop-video-modal-close {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001; /* Above iframe */
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .desktop-video-modal-close:hover,
+        .desktop-video-modal-close:focus {
+            color: #fff;
+            text-decoration: none;
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .desktop-video-iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9; /* Maintain 16:9 aspect ratio */
+            border: none;
+            background-color: black; /* To show when iframe loads */
+        }
+
+        /* Media queries for modal responsiveness */
+        @media (max-width: 768px) {
+            .desktop-video-modal-content {
+                width: 95%;
+                margin: 20px auto;
+            }
+            .desktop-video-modal-close {
+                font-size: 24px;
+                width: 30px;
+                height: 30px;
+                top: 5px;
+                right: 10px;
+            }
+        }
+
+        /* NEW SECTION: Gallery Section Styles */
+        .desktop-gallery-section {
+            background-color: #f7f7f7; /* Light background */
+            padding: 80px 40px;
+        }
+
+        .desktop-gallery-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .desktop-gallery-main-row {
+            display: flex;
+            gap: 40px; /* Space between image and text */
+            align-items: center;
+            margin-bottom: 30px; /* Space above thumbnails */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+
+        .desktop-gallery-hero-image-wrapper {
+            flex: 2; /* Takes more space */
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            min-width: 350px; /* Ensure image doesn't get too small */
+        }
+
+        .desktop-gallery-hero-image {
+            width: 100%;
+            height: 300px; /* Fixed height for consistency */
+            object-fit: cover;
+            display: block;
+        }
+
+        .desktop-gallery-text-content {
+            flex: 1; /* Takes remaining space */
+            text-align: left;
+            padding-right: 20px; /* Some padding from the edge */
+            min-width: 300px; /* Prevent text from becoming too narrow */
+        }
+
+        .desktop-gallery-title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .desktop-gallery-description {
+            font-size: 1em;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .desktop-gallery-thumbnail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px; /* Space between thumbnails */
+            flex-wrap: wrap;
+        }
+
+        .desktop-gallery-thumbnail-wrapper {
+            flex: 1; /* Equal width for thumbnails */
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            min-width: 200px; /* Ensure thumbnails don't get too small */
+        }
+
+        .desktop-gallery-thumbnail-image {
+            width: 100%;
+            height: 230px; /* Fixed height for consistency */
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Media Queries for Gallery Section */
+        @media (max-width: 992px) {
+            .desktop-gallery-section {
+                padding: 60px 20px;
+            }
+            .desktop-gallery-main-row {
+                flex-direction: column; /* Stack image and text */
+                gap: 20px;
+            }
+            .desktop-gallery-hero-image-wrapper,
+            .desktop-gallery-text-content {
+                flex: none; /* Remove flex sizing */
+                width: 100%; /* Take full width */
+                min-width: unset;
+                padding-right: 0;
+            }
+            .desktop-gallery-hero-image {
+                height: 250px;
+            }
+            .desktop-gallery-title {
+                font-size: 2em;
+            }
+            .desktop-gallery-description {
+                font-size: 0.9em;
+            }
+            .desktop-gallery-thumbnail-row {
+                justify-content: center; /* Center thumbnails when wrapping */
+                gap: 15px;
+            }
+            .desktop-gallery-thumbnail-wrapper {
+                min-width: unset;
+                width: calc(50% - 10px); /* Two thumbnails per row */
+            }
+            .desktop-gallery-thumbnail-image {
+                height: 150px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .desktop-gallery-thumbnail-wrapper {
+                width: 100%; /* One thumbnail per row */
+                max-width: 300px; /* Constrain width */
+            }
+            .desktop-gallery-thumbnail-row {
+                flex-direction: column;
+                align-items: center;
+            }
+            .desktop-gallery-hero-image {
+                height: 200px;
+            }
+            .desktop-gallery-title {
+                font-size: 1.8em;
+            }
+        }
+
+/* ── Style Block 4 ── */
+/* ===============================
+   OUR PACKAGES – COLORFUL MODERN
+=================================*/
+
+.desktop-programs-section {
+    background: #ffffff;
+    padding: 100px 40px;
+    text-align: center;
+}
+
+.desktop-program-cards-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.desktop-program-card {
+    position: relative;
+    width: calc(33.333% - 30px);
+    min-width: 280px;
+    border-radius: 22px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.08);
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Gradient Top Area */
+.desktop-program-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    border-radius: 22px 22px 0 0;
+    z-index: 1;
+}
+
+/* Individual Gradients */
+.desktop-program-card:nth-child(1)::before {
+    background: linear-gradient(135deg, #ff758c, #ff7eb3);
+}
+
+.desktop-program-card:nth-child(2)::before {
+    background: linear-gradient(135deg, #43cea2, #185a9d);
+}
+
+.desktop-program-card:nth-child(3)::before {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+
+/* Image Styling */
+.desktop-card-image-wrapper {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    position: relative;
+}
+
+.desktop-card-image {
+    width: 80%;
+    object-fit: contain;
+    margin-top: 30px;
+}
+
+/* Content */
+.desktop-card-content {
+    padding: 35px 25px;
+    text-align: left;
+    position: relative;
+    z-index: 2;
+    flex-grow: 1;
+}
+
+.desktop-card-title {
+    font-size: 1.5em;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #222;
+}
+
+.desktop-card-description {
+    font-size: 0.95em;
+    color: #666;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.desktop-card-button {
+    background: #007bff;
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.desktop-card-button:hover {
+    transform: translateY(-3px);
+}
+
+/* Hover Effect */
+.desktop-program-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 25px 55px rgba(0,0,0,0.15);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .desktop-program-card {
+        width: calc(50% - 20px);
+    }
+}
+
+@media (max-width: 768px) {
+    .desktop-program-card {
+        width: 90%;
+    }
+}
+
+/* ── Style Block 5 ── */
+/* Swiper Container Styles */
+        .packages-swiper-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 60px;
+            position: relative;
+        }
+
+        .packages-swiper {
+            width: 100%;
+            padding: 20px 0 50px 0;
+            overflow: hidden;
+        }
+
+        .packages-swiper .swiper-slide {
+            height: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Swiper Navigation Buttons */
+        .packages-swiper-button-prev,
+        .packages-swiper-button-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: #007bff;
+            border-radius: 50%;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .packages-swiper-button-prev {
+            left: 0;
+        }
+
+        .packages-swiper-button-next {
+            right: 0;
+        }
+
+        .packages-swiper-button-prev:hover,
+        .packages-swiper-button-next:hover {
+            background: #0056b3;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .packages-swiper-button-prev::after,
+        .packages-swiper-button-next::after {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Swiper Pagination */
+        .packages-swiper .swiper-pagination {
+            bottom: 0;
+        }
+
+        .packages-swiper .swiper-pagination-bullet {
+            width: 12px;
+            height: 12px;
+            background: #ccc;
+            opacity: 1;
+            transition: all 0.3s ease;
+        }
+
+        .packages-swiper .swiper-pagination-bullet-active {
+            background: #007bff;
+            width: 30px;
+            border-radius: 6px;
+        }
+
+        /* Card adjustments for swiper */
+        .packages-swiper .desktop-program-card {
+            width: 100%;
+            margin: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .packages-swiper-container {
+                padding: 0 50px;
+            }
+
+            .packages-swiper-button-prev,
+            .packages-swiper-button-next {
+                width: 40px;
+                height: 40px;
+            }
+
+            .packages-swiper-button-prev::after,
+            .packages-swiper-button-next::after {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .packages-swiper-container {
+                padding: 0 40px;
+            }
+
+            .packages-swiper-button-prev,
+            .packages-swiper-button-next {
+                width: 35px;
+                height: 35px;
+            }
+        }
+
+/* ── Style Block 6 ── */
+/* --- Modal sizing (same as causes_category) --- */
+    .celeb-modal-80w { max-width: 80%; }
+    @media (max-width: 768px) {
+        .celeb-modal-80w { max-width: 100%; margin: 0; }
+    }
+
+    /* --- Modal Content --- */
+    #celebDonationModal .modal-content {
+        background-color: #fffdf9;
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 16px 60px -15px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+    }
+
+    /* --- Modal Header --- */
+    #celebDonationModal .modal-header {
+        background-color: #fffaf3;
+        padding: 20px 30px;
+        border-bottom: 1px solid #f3ebe1;
+    }
+    #celebDonationModal .modal-header .modal-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+    #celebDonationModal .modal-header .btn-close {
+        background: transparent;
+        border: none;
+        width: 2rem;
+        height: 2rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+        opacity: 0.8;
+        cursor: pointer;
+        color: #333;
+        position: relative;
+    }
+    #celebDonationModal .modal-header .btn-close::before {
+        content: "\00d7";
+        font-size: 1.5rem;
+    }
+    #celebDonationModal .modal-header .btn-close:hover { opacity: 1; color: #000; }
+
+    /* --- Wizard Steps --- */
+    #celebDonationModal .celeb-wizard-container { padding: 20px 25px; }
+    #celebDonationModal .wizard-step {
+        display: none;
+        opacity: 0;
+        animation: celebFadeIn 0.6s ease-in-out forwards;
+    }
+    #celebDonationModal .wizard-step.active { display: block; }
+    @keyframes celebFadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- Form Styling (matching causes_category) --- */
+    #celebDonationModal .form_group { margin-bottom: 20px; }
+    #celebDonationModal .label-title {
+        font-weight: 600;
+        color: #4a4a4a;
+        margin-bottom: 0px;
+        margin-top: 0px;
+        font-size: 1rem;
+        display: block;
+    }
+    #celebDonationModal .form-control {
+        width: 100%;
+        padding: 13px 18px;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        background-color: #ffffff;
+        font-size: 1rem;
+        color: #333;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+    #celebDonationModal .form-control::placeholder { color: #a0a0a0; }
+    #celebDonationModal .form-control:focus {
+        background-color: #fff;
+        border-color: #009dff;
+        box-shadow: 0 0 0 4px rgba(0, 157, 255, 0.15);
+        outline: none;
+    }
+
+    /* --- Step headers --- */
+    #celebDonationModal .wizard-step h4 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 25px;
+    }
+    #celebDonationModal .donation-main-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    
+
+    /* --- Navigation Footer (same as causes_category) --- */
+    #celebDonationModal .celeb-wizard-navigation {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border-top: 1px solid #f3ebe1;
+    }
+    #celebDonationModal .celeb-prev-btn,
+    #celebDonationModal .celeb-next-btn,
+    #celebDonationModal .celeb-donate-btn {
+        padding: 14px 40px;
+        font-weight: 700;
+        font-size: 1rem;
+        border-radius: 12px;
+        border: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    #celebDonationModal .celeb-prev-btn {
+        background-color: #f0f2f5;
+        color: #555;
+        border: 1px solid #e0e4e8;
+    }
+    #celebDonationModal .celeb-prev-btn:hover {
+        background-color: #e5e8eb;
+        border-color: #d1d5db;
+    }
+    #celebDonationModal .celeb-next-btn {
+        background: #009dff;
+        color: white;
+        animation: celebPulseBtn 2s infinite;
+    }
+    #celebDonationModal .celeb-next-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px -8px rgba(0, 157, 255, 0.7);
+        animation-play-state: paused;
+    }
+    #celebDonationModal .celeb-donate-btn {
+        background: #009dff;
+        color: white;
+        animation: celebPulseBtn 2s infinite;
+    }
+    #celebDonationModal .celeb-donate-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px -8px rgba(0, 157, 255, 0.7);
+        animation-play-state: paused;
+    }
+    @keyframes celebPulseBtn {
+        0% { box-shadow: 0 0 0 0 rgba(0, 157, 255, 0.4); }
+        70% { box-shadow: 0 0 0 12px rgba(0, 157, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 157, 255, 0); }
+    }
+
+    /* --- Package badge in header --- */
+    .celeb-package-badge {
+        display: inline-block;
+        background: #e9f5ff;
+        color: #009dff;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+        margin-left: 10px;
+        border: 1px solid #d0eaff;
+    }
+
+    /* --- Add-on cards --- */
+    .celeb-addon-card {
+        border: 2px solid #eee;
+        border-radius: 12px;
+        padding: 12px 15px;
+        margin-bottom: 10px;
+        transition: all 0.2s;
+    }
+    .celeb-addon-card:has(input:checked) { border-color: #009dff; background: #e9f5ff; }
+    .celeb-addon-card label {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        font-size: 14px;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+    .celeb-addon-price { color: #009dff; font-weight: 700; margin-left: auto; }
+    .celeb-addon-file { display: none; margin-top: 8px; }
+    .celeb-addon-file.show { display: block; }
+    .celeb-addon-fields { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e0e0e0; }
+    .celeb-addon-fields .label-title { font-size: 0.85rem; margin-top: 5px; }
+    .celeb-addon-fields small { font-size: 11px; }
+
+    /* Validation error styles */
+    #celebDonationModal .error { border-color: #e74c3c !important; }
+    @keyframes celebShake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-5px); }
+        40%, 80% { transform: translateX(5px); }
+    }
+    #celebDonationModal .error-shake { animation: celebShake 0.4s ease-in-out; }
+
+    /* Google sign-in button */
+    .celeb-google-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        background: #fff;
+        color: #333;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .celeb-google-btn:hover {
+        border-color: #009dff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        text-decoration: none;
+        color: #333;
+    }
+
+    /* --- Wish video alert --- */
+    .celeb-wish-alert {
+        background-color: #e9f5ff;
+        color: #334e68;
+        padding: 15px 20px;
+        border-radius: 14px;
+        font-size: 1rem;
+        border: 1px solid #d0eaff;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .celeb-wish-alert i { color: #27ae60; font-size: 18px; }
+
+    /* --- Total contribution row --- */
+    .celeb-total-row {
+        background-color: #fffaf3;
+        padding: 15px 18px;
+        border-radius: 12px;
+        border: 1px solid #f3ebe1;
+        margin-top: 15px;
+    }
+
+
+
+    /* --- Mobile sticky nav fix --- */
+    @media (max-width: 768px) {
+        #celebDonationModal .celeb-wizard-navigation {
+            position: sticky;
+            bottom: 0;
+            background: #fffdf9;
+            z-index: 10;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+        #celebDonationModal .celeb-wizard-container {
+            overflow-y: hidden !important;
+            padding: 15px 15px;
+
+        }
+    }
+
+    /* OTP sign-in buttons */
+    .google_sign, .google_sign_btn {
+        background-color: #fff;
+        padding: 8px;
+        border-radius: 40px;
+        border: 1px solid gray;
+        margin-bottom: 10px;
+        font-size: 14px;
+        text-decoration: none;
+        color: #000;
+        font-weight: 600;
+    }
+    .google_sign_btn:hover, .google_sign:hover {
+        background-color: #f8f9fa;
+        border-color: #009dff;
+        text-decoration: none;
+        color: #000;
+    }
+
+    /* OTP type selector cards */
+    .otp-type-wrapper { display: flex; gap: 12px; }
+    .otp-type-card {
+        flex: 1; display: flex; align-items: center; gap: 10px;
+        padding: 12px 14px; border: 1px solid #dee2e6; border-radius: 10px;
+        cursor: pointer; background: #fff; transition: all 0.25s ease; font-weight: 500;
+    }
+    .otp-type-card input { accent-color: #0d6efd; cursor: pointer; }
+    .otp-type-card:hover { border-color: #0d6efd; background: #f8fbff; }
+    .otp-type-card:has(input:checked) { border-color: #0d6efd; background: #eef5ff; }
+    .otp-type-card input:checked + span { color: #0d6efd; font-weight: 600; }
+
+    /* OTP modals must appear above the donation modal (z-index:99999) */
+    #otpLoginModal, #otpVerifyModal { z-index: 200000 !important; }
+
+    /* Mobile responsive for OTP modals */
+    @media (max-width: 576px) {
+        #otpLoginModal .modal-dialog,
+        #otpVerifyModal .modal-dialog {
+            margin: 0;
+            max-width: 100%;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        #otpLoginModal .modal-content,
+        #otpVerifyModal .modal-content {
+            border-radius: 20px 20px 0 0;
+            padding: 20px 16px !important;
+        }
+        #otpLoginModal .modal-header,
+        #otpVerifyModal .modal-header {
+            padding-bottom: 12px;
+        }
+        .otp-type-wrapper { gap: 8px; }
+        .otp-type-card {
+            padding: 10px 10px;
+            gap: 6px;
+            font-size: 13px;
+        }
+        .otp-type-card span { font-size: 13px; }
+        #otpDialCode { max-width: 85px !important; font-size: 13px; }
+        #otpPhoneInput { font-size: 14px; }
+        #sendOtpBtn, #verifyOtpBtn { font-size: 15px; padding: 12px; }
+        .google_sign, .google_sign_btn { width: 100% !important; justify-content: center; }
+    }
+
+/* ── Style Block 7 ── */
+.other-welfare {
+    position: relative;
+    overflow: hidden;
+    padding: 56px 16px;
+    background: #fffaf3;
+    font-family: 'Poppins', 'Montserrat', 'Nunito', sans-serif;
+  }
+  /* Soft floating blobs drift behind the cards to lift the flat look */
+  .other-welfare::before,
+  .other-welfare::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(8px);
+  }
+  .other-welfare::before {
+    width: 260px;
+    height: 260px;
+    top: -90px;
+    left: -70px;
+    background: radial-gradient(circle at 30% 30%, rgba(232, 84, 47, 0.16), transparent 70%);
+    animation: ow-float-a 11s ease-in-out infinite;
+  }
+  .other-welfare::after {
+    width: 320px;
+    height: 320px;
+    bottom: -120px;
+    right: -90px;
+    background: radial-gradient(circle at 70% 70%, rgba(245, 176, 65, 0.20), transparent 70%);
+    animation: ow-float-b 14s ease-in-out infinite;
+  }
+  @keyframes ow-float-a {
+    0%, 100% { transform: translate(0, 0); }
+    50%      { transform: translate(30px, 24px); }
+  }
+  @keyframes ow-float-b {
+    0%, 100% { transform: translate(0, 0); }
+    50%      { transform: translate(-34px, -22px); }
+  }
+
+  .other-welfare .ow-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+  .other-welfare .ow-head {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  /* --- Scroll reveal: header + cards animate in when the section scrolls into
+     view. Elements start hidden and slide up once `.ow-in` is added by the
+     IntersectionObserver below. The marquee cards also stagger in. --- */
+  .other-welfare .ow-head,
+  .other-welfare .ow-marquee {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .other-welfare .ow-marquee {
+    transition-delay: .15s;
+  }
+  .other-welfare.ow-in .ow-head,
+  .other-welfare.ow-in .ow-marquee {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .other-welfare .ow-title {
+    position: relative;
+    display: inline-block;
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 700;
+    color: #1f2933;
+    margin: 0 0 16px;
+    padding-bottom: 12px;
+  }
+  /* Animated accent underline that gently pulses in width */
+  .other-welfare .ow-title::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    height: 4px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #e8542f, #f5b041);
+    transform: translateX(-50%);
+    animation: ow-underline 3.2s ease-in-out infinite;
+  }
+  @keyframes ow-underline {
+    0%, 100% { width: 48px; }
+    50%      { width: 96px; }
+  }
+  .other-welfare .ow-subtitle {
+    font-size: clamp(14px, 2.4vw, 16px);
+    color: #6b7280;
+    margin: 0;
+  }
+
+  /* --- Marquee viewport: a single full-bleed row that auto-slides --- */
+  .other-welfare .ow-marquee {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    width: 100%;
+    /* fade the edges so cards slide in/out smoothly */
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+  }
+  .other-welfare .ow-track {
+    display: flex;
+    flex-wrap: nowrap;
+    width: max-content;
+    padding: 8px 0;
+    animation: ow-scroll 32s linear infinite;
+    will-change: transform;
+  }
+  /* Six passes are rendered; -50% (3 passes) lands exactly on pass 4, which is
+     identical to pass 1 — seamless with no empty gap. The spacing between cards
+     uses margin-right (not gap) so the 50% point is pixel-exact. */
+  @keyframes ow-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  /* Pause the slide when the user hovers, so they can read/click a card */
+  .other-welfare .ow-marquee:hover .ow-track {
+    animation-play-state: paused;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .other-welfare .ow-track,
+    .other-welfare::before,
+    .other-welfare::after,
+    .other-welfare .ow-title::after {
+      animation: none;
+    }
+    /* Don't hide content behind a reveal that won't animate */
+    .other-welfare .ow-head,
+    .other-welfare .ow-marquee {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  .other-welfare .ow-card {
+    position: relative;
+    flex: 0 0 320px;
+    width: 320px;
+    margin-right: 22px;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(160deg, #ffffff 0%, #fff4e8 100%);
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 6px 20px rgba(17, 24, 39, 0.06);
+    border: 1px solid #f3e7d6;
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+  /* Each of the 3 welfares gets its own gradient. Cards repeat in passes of 3,
+     so nth-child(3n+1/3n+2/3n) maps consistently to the same welfare. */
+  .other-welfare .ow-card:nth-child(3n+1) {
+    background: linear-gradient(160deg, #ffffff 0%, #ffe9dd 100%);
+  }
+  .other-welfare .ow-card:nth-child(3n+2) {
+    background: linear-gradient(160deg, #ffffff 0%, #e6f6ec 100%);
+  }
+  .other-welfare .ow-card:nth-child(3n) {
+    background: linear-gradient(160deg, #ffffff 0%, #e6f1fb 100%);
+  }
+  /* Diagonal shine that sweeps across a card on hover */
+  .other-welfare .ow-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform .7s ease;
+  }
+  .other-welfare .ow-card:hover::before {
+    transform: translateX(120%);
+  }
+  .other-welfare .ow-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 34px rgba(232, 84, 47, 0.18);
+  }
+  .other-welfare .ow-card-media {
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #e9ecef;
+  }
+  .other-welfare .ow-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .4s ease;
+  }
+  .other-welfare .ow-card:hover .ow-card-media img {
+    transform: scale(1.06);
+  }
+  .other-welfare .ow-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 18px 20px;
+  }
+  .other-welfare .ow-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2933;
+  }
+  .other-welfare .ow-card-tagline {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.4;
+  }
+  .other-welfare .ow-card-cta {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #e8542f;
+  }
+  .other-welfare .ow-card-cta i {
+    font-style: normal;
+    transition: transform .2s ease;
+    display: inline-block;
+  }
+  .other-welfare .ow-card:hover .ow-card-cta i {
+    transform: translateX(4px);
+  }
+
+  /* Tablet: slightly narrower cards */
+  @media (max-width: 900px) {
+    .other-welfare .ow-card {
+      flex-basis: 280px;
+      width: 280px;
+    }
+  }
+  /* Mobile: smaller cards, still one auto-sliding row */
+  @media (max-width: 600px) {
+    .other-welfare {
+      padding: 40px 0;
+      margin-bottom: 50px;
+    }
+    .other-welfare .ow-head {
+      padding: 0 14px;
+    }
+    .other-welfare .ow-track {
+      animation-duration: 24s;
+    }
+    .other-welfare .ow-card {
+      flex-basis: 240px;
+      width: 240px;
+      margin-right: 14px;
+    }
+    .other-welfare .ow-card-media {
+      aspect-ratio: 16 / 9;
+    }
+  }
+

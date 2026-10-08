@@ -1,0 +1,238 @@
+================================================================================
+THAAGAM FOUNDATION — BACKEND, LOGINS, ROUTES & DEMO PAYMENTS CHECKLIST
+================================================================================
+Document Path: thaagam-app/BACKEND_AND_LOGINS_LIST.txt
+Target: Frontend & Backend Developers Handover
+Status: Complete Inventory of Logins, Payments (Dummy Demo), and Missing Routes
+================================================================================
+
+--------------------------------------------------------------------------------
+1. EXECUTIVE OVERVIEW
+--------------------------------------------------------------------------------
+The Thaagam Foundation web application is built on React 18, Vite 8, and React Router v7.
+Currently, 318 route patterns are active. All core static views, cause pages, and 
+calculators are functional on the client side.
+
+To finalize the handover and make the site fully interactive:
+1. REAL/MOCK BACKEND FOR LOGINS: Need lightweight auth endpoints (Phone OTP & Google OAuth)
+   for 4 distinct user types: Donors, Volunteers, Students, and Healthcare patients.
+2. DUMMY DEMO PAYMENTS: All real payment gateway calls will be routed to an interactive
+   Mock/Demo Payment Gateway (simulating UPI / Cards / NetBanking / Razorpay) with instant
+   success confirmation, mock 80G tax receipt generation, and WhatsApp receipt preview.
+3. POST-LOGIN ROUTES: Create the destination dashboard routes where users land after
+   logging in or registering.
+
+================================================================================
+2. WHERE WE NEED TO CREATE BACKEND FOR LOGINS & AUTHENTICATION
+================================================================================
+
+There are 5 distinct login / authentication touchpoints across the website:
+
+[A] DONOR AUTHENTICATION (Donors tracking donations & downloading tax receipts)
+    - Where it appears:
+      * Navigation bar "Profile" icon / "/profile"
+      * Universal "Track Donation" modal in Header (#trackDonationForm / #otpValidationForm)
+      * Donor login screen at "/donor/login"
+    - Required Backend Endpoints:
+      * POST /api/auth/donor/send-otp/      --> Accepts phone number, sends 6-digit OTP
+      * POST /api/auth/donor/verify-otp/    --> Validates OTP, returns JWT token & donor details
+      * POST /api/auth/google/             --> Verifies Google OAuth token, returns session
+      * GET  /api/donor/profile/           --> Returns donor name, total donated, impact metrics
+      * GET  /api/donor/donations/         --> List of past donation transactions with receipts
+
+[B] VOLUNTEER AUTHENTICATION (Volunteers joining events & logging hours)
+    - Where it appears:
+      * Volunteer page modal at "/volunteer" (#signupForm, #phoneOtpForm, #gmailOtpForm)
+      * Dedicated login page at "/volunteer/volunteer_login"
+      * Volunteer logout handler at "/volunteer/volunteer_logout"
+    - Required Backend Endpoints:
+      * POST /volunteer/api/send-otp/       --> Sends OTP to volunteer's WhatsApp / SMS
+      * POST /volunteer/api/verify-otp/     --> Verifies OTP, registers or logs in volunteer
+      * GET  /volunteer/api/my-profile/     --> Returns volunteer profile, badges, hours served
+      * GET  /volunteer/api/my-events/      --> Returns registered and upcoming events
+
+[C] EDUCATION STUDENT AUTHENTICATION (CrowdFundEducation beneficiaries)
+    - Where it appears:
+      * Student Login: "/CrowdFundEducation/user_login"
+      * Student Application/Register: "/CrowdFundEducation/education_user_register"
+    - Required Backend Endpoints:
+      * POST /api/education/login/          --> Student login (email/phone + password/OTP)
+      * POST /api/education/register/       --> Scholarship application submission with marksheets
+      * GET  /api/education/my-campaign/    --> Student's fundraising progress & tuition fee status
+
+[D] HEALTHCARE PATIENT AUTHENTICATION (CrowdFundHealthcare beneficiaries)
+    - Where it appears:
+      * Healthcare Login: "/CrowdFundHealthcare/healthcare_login"
+      * Patient Register: "/CrowdFundHealthcare/healthcare_user_register"
+    - Required Backend Endpoints:
+      * POST /api/healthcare/login/         --> Patient / Guardian login
+      * POST /api/healthcare/register/      --> Medical fundraising request with hospital estimate
+      * GET  /api/healthcare/my-campaign/   --> Medical funds raised vs hospital target
+
+[E] LIVELIHOOD BENEFICIARY AUTHENTICATION (College & Career CrowdFund)
+    - Where it appears:
+      * Livelihood Login: "/livelihood/login"
+      * Beneficiary Register: "/livelihood/livelihood_user_register"
+    - Required Backend Endpoints:
+      * POST /api/livelihood/login/         --> Livelihood login
+      * POST /api/livelihood/register/      --> Self-employment / kit application form
+
+================================================================================
+3. WHICH ROUTES WE NEED TO CREATE FOR LOGINS & POST-LOGIN DASHBOARDS
+================================================================================
+
+Add the following new routes in 'thaagam-app/src/App.jsx':
+
+-----------------------------------------------------------------
+ROUTE                                     COMPONENT TO CREATE / RENDER
+-----------------------------------------------------------------
+// 1. Auth Pages
+/donor/login                              <DonorLogin /> (or enhance <Profile />)
+/donor/register                           <DonorRegister />
+/volunteer/login                          <VolunteerLogin />
+/volunteer/register                       <VolunteerRegister />
+/CrowdFundEducation/user_login            <EducationLogin />
+/CrowdFundEducation/education_user_register <EducationRegister />
+/CrowdFundHealthcare/healthcare_login     <HealthcareLogin />
+/CrowdFundHealthcare/healthcare_user_register <HealthcareRegister />
+/livelihood/login                         <LivelihoodLogin />
+/livelihood/livelihood_user_register      <LivelihoodRegister />
+
+// 2. Post-Login Protected Dashboards
+/donor/dashboard                          <DonorDashboard />
+  * Shows: Total donations, 80G tax certificates, order receipts, profile update form
+/profile                                  <Profile /> (connected to login state)
+/volunteer/dashboard                      <VolunteerDashboard />
+/volunteer/my_services                    <VolunteerMyServices />
+  * Shows: Total service hours, events attended, certificate of appreciation download
+/volunteer/profile                        <VolunteerProfile />
+/education/dashboard                      <StudentDashboard />
+  * Shows: Fees goal progress, donor messages, college fees payment status
+/healthcare/dashboard                     <PatientDashboard />
+  * Shows: Hospital treatment goal, disbursement records
+/livelihood/dashboard                     <LivelihoodDashboard />
+  * Shows: Training kit & equipment crowdfunding status
+
+// 3. Auth Callback Routes
+/auth/google/callback                     <GoogleAuthCallback />
+/auth/logout                              <LogoutHandler />
+
+================================================================================
+4. WHERE PAYMENTS EXIST & HOW TO MAKE DUMMY DEMO PAYMENTS
+================================================================================
+
+The user confirmed: "we gonna make the payments as dummy demo version only".
+Here is where all payment forms are located and how to implement the Demo Gateway:
+
+[A] LOCATIONS OF PAYMENT / DONATION FORMS:
+    1. Home Page (#donation-form / Quick Wizard)
+    2. Animal Feeding (/animal) - Feeding tiers, photo-on-parcel
+    3. Egg & Milk (/egg_milk) - Quantity counter, service date, parcel name
+    4. Homeless Meals (/homeless) - Meal count, service date, parcel name
+    5. Food Hub (/food) - Briyani, thaali, water distribution packages
+    6. Environment (/environment) - Tree sapling counts
+    7. Nepal Flood Relief (/nepal_flood) - Emergency relief kits
+    8. Orphanage Hub (/orphanage) - Meal & grocery supplies
+    9. Education Hub (/education) - Student tuition fees
+   10. Healthcare Hub (/healthcare) - Medical surgeries / treatments
+   11. Livelihood Hub (/livelihood) - Career toolkits
+   12. Celebrations (/celebration) - Virtual cake cutting & birthday meals
+   13. All 30 Dynamic Causes in /causes-detail/:slug (#quick-donation-form)
+   14. Universal Monthly Subscription Modal (#load-subscription-modal/) in Navbar/Footer
+
+[B] DUMMY DEMO PAYMENT SYSTEM SPECIFICATION:
+    Instead of calling live Razorpay / Cashfree APIs that fail without live merchant keys:
+
+    1. DEMO CHECKOUT MODAL (<DemoPaymentModal />):
+       * Triggered whenever user clicks "Donate Now", "Pay Now", or submits a donation form.
+       * Displays summary:
+         - Donor Name, Phone, Campaign Name, Service Date, Total Amount (e.g. ₹1,500)
+       * Displays interactive mock payment tabs:
+         [UPI / QR Code] | [Google Pay / PhonePe / Paytm] | [Debit/Credit Card] | [NetBanking]
+       * For UPI tab: shows a simulated QR code with countdown timer.
+       * Action Buttons:
+         - Green Button: "Simulate Successful Payment (Demo)"
+         - Red Button:   "Simulate Payment Failure / Cancel"
+
+    2. DEMO PAYMENT SUCCESS PAGE / ROUTE:
+       * Route: /donation/success (or /payment/success)
+       * Shows:
+         - Animated green checkmark badge
+         - Simulated Transaction ID: "TXN_THAAGAM_20261005_8492"
+         - Amount Paid, Campaign Name, Service Date, Parcel Name preview
+         - Instant Button: "Download 80G Tax Exemption Receipt (Demo PDF)"
+         - Instant Button: "Send Confirmation on WhatsApp (Demo Preview)"
+         - Button: "Back to Home" / "View My Profile"
+
+    3. DEMO PAYMENT FAILURE PAGE / ROUTE:
+       * Route: /donation/failure (or /payment/failure)
+       * Shows error message, reason ("Demo cancellation or bank timeout"), and "Try Again" button.
+
+    4. DEMO LEAD AUTO-SAVE:
+       * In donation forms, when donor types phone or name, trigger a mock auto-save:
+         POST /api/donation-lead-autosave/ -> returns { success: true, lead_id: "LEAD-1049" }
+         (stores in localStorage or mock database for abandoned recovery).
+
+================================================================================
+5. INQUIRY & OTHER FORMS REQUIRING BACKEND / DEMO HANDLERS
+================================================================================
+
+In addition to donations and logins, these 3 forms exist on the site:
+
+1. CONTACT FORM:
+   * Location: /contact (#contactForm) and Home page footer
+   * Fields: first_name, last_name, email, phone, subject, message
+   * Action: POST /api/contact/submit/ (or mock success popup with ticket ID)
+
+2. BUG REPORT FORM:
+   * Location: /report_bugs (#reportBugForm)
+   * Fields: name, email, url, severity, description, screenshot file
+   * Action: POST /api/bugs/report/ (or mock ticket created)
+
+3. CELEBRATION VIRTUAL CAKE BOOKING:
+   * Location: /celebration
+   * Fields: celebrant_name, date, cake_type, meal_count, live_video_required
+   * Action: POST /api/celebrations/book/ -> opens Demo Payment Modal
+
+================================================================================
+6. RECOMMENDED STEP-BY-STEP IMPLEMENTATION CHECKLIST FOR TEAMMATE
+================================================================================
+
+[ ] Step 1: Create a Central Demo Payment Context / Component
+    * Create 'src/components/DemoPaymentModal.jsx'
+    * Create 'src/pages/PaymentSuccess.jsx' and 'src/pages/PaymentFailure.jsx'
+    * Register routes in 'src/App.jsx':
+      - /donation/success
+      - /donation/failure
+
+[ ] Step 2: Hook the Donation Forms to DemoPaymentModal
+    * In 'src/pages/CausesDetail.jsx', 'EggMilk.jsx', 'Homeless.jsx', 'Animal.jsx',
+      'Food.jsx', 'Home.jsx', etc., replace the alert() placeholder with
+      opening the DemoPaymentModal.
+
+[ ] Step 3: Implement Auth Mock / Backend Client
+    * Create 'src/api/auth.js':
+      - loginWithPhone(phone, otp)
+      - sendPhoneOtp(phone)
+      - loginWithGoogle(credential)
+      - logout()
+      - getCurrentUser()
+    * Use localStorage to persist a demo user session:
+      {
+        id: "USR_101",
+        name: "Demo Donor",
+        phone: "+91 98765 43210",
+        email: "donor@example.com",
+        role: "donor",
+        token: "demo_jwt_token_thaagam"
+      }
+
+[ ] Step 4: Create Login & Post-Login Dashboard Views
+    * Create 'src/pages/DonorDashboard.jsx' (past donations, receipts, 80G tax certificate)
+    * Create 'src/pages/VolunteerDashboard.jsx' (my services, event hours)
+    * Connect '/profile' to show dashboard if logged in, or phone OTP login if logged out.
+
+[ ] Step 5: Test & Validate
+    * Run: npm run build
+    * Verify zero errors and all routes return HTTP 200.
+================================================================================

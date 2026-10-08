@@ -1,0 +1,176 @@
+/* Healthcare Page Styles */
+.healthcare-page-container {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.uicon {
+  margin-bottom: 24px;
+}
+
+/* General */
+.row_container {
+  height: auto;
+}
+
+.category_list.active_category {
+  background-color: #009dff;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 15px;
+  font-weight: 500;
+}
+
+.packages_images img {
+  width: 100%;
+  height: 150px;
+}
+
+.all_categories_data {
+  width: 85px;
+  height: 90px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.all_categories_data h6 {
+  font-size: var(--font-size-sm);
+  text-align: center;
+  margin-top: 5px;
+}
+
+.categories_active {
+  background-color: #a1d1c0;
+}
+
+.donate_btn a {
+  background-color: #21936a;
+}
+
+/* Mobile Badge */
+.mobile_badge {
+  position: absolute;
+  background-color: #0063fe;
+  color: white;
+  padding: 3px;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.mobile_badge.completed {
+  background-color: #22c55e; /* Green for Completed */
+}
+
+/* Desktop Badge */
+.custom_badge {
+  background-color: #0063fe;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.custom_badge.completed {
+  background-color: #22c55e; /* Green for Completed */
+}
+
+.image-container {
+  position: relative;
+}
+
+.feature-container img {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.all_categories {
+  scrollbar-width: thin;
+  padding-bottom: 15px;
+  margin-bottom: 5px;
+}
+
+.search_container {
+  background-color: #ffffff;
+  color: #000;
+}
+
+.search_container input {
+  background-color: transparent;
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 0 10px;
+  color: #4c4c4c;
+  font-size: 16px;
+  caret-color: #737373;
+}
+
+.search_container input::placeholder {
+  color: rgba(34, 34, 34, 0.6);
+  font-style: italic;
+}
+
+/* Fix badge disappearing on visited cards (mobile) */
+a.feature-container,
+a.feature-container:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.feature-container .mobile_badge,
+a.feature-container:visited .mobile_badge {
+  color: #fff !important;
+  background-color: #0063fe !important;
+  z-index: 6;
+}
+
+a.feature-container .mobile_badge.completed,
+a.feature-container:visited .mobile_badge.completed {
+  background-color: #22c55e !important;
+}
+
+a.feature-container:visited .content_area h6 {
+  color: #fff;
+}
+
+a.feature-container:visited .content_area span {
+  color: #f9fa57;
+}
+
+/* Desktop card: name full row, amounts below */
+.card_content h5 {
+  width: 100%;
+}
+
+/* Desktop healthcare icons - square shape like mobile */
+.desk_healthcare_icons {
+  margin-top: 40px;
+  gap: 20px;
+}
+
+/* Remove border-radius from outer edges of first and last cards */
+.desk_version .category_content {
+  border-radius: 0;
+}
+
+.desk_healthcare_icons .category_list {
+  width: 85px;
+  height: 90px;
+  min-width: 85px;
+  padding: 12px;
+  text-align: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.desk_healthcare_icons .category_list.active_category {
+  background-color: #a1d1c0;
+  color: #1f2937;
+  padding: 12px;
+  border-radius: 6px;
+}
