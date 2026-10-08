@@ -1,10 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { connectDB } from './config/db.js';
 import causeRoutes from './routes/causeRoutes.js';
 import packageRoutes from './routes/packageRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const frontendDistPath = path.join(__dirname, '../frontend/dist');
 
 // Load environment variables
 dotenv.config();
@@ -36,7 +42,22 @@ app.use('/api/causes', causeRoutes);
 app.use('/api/packages', packageRoutes);
 app.use('/api/admin', adminRoutes);
 
-// 404 Handler
+// Serve Frontend Static Files in Production
+app.use(express.static(frontendDistPath));
+
+// Fallback for React Router (SPA)
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(path.join(frontendDistPath, 'index.html'), (err) => {
+    if (err) {
+      next();
+    }
+  });
+});
+
+// 404 Handler for undefined API routes
 app.use((req, res) => {
   res.status(404).json({ success: false, message: `Route not found: ${req.originalUrl}` });
 });
