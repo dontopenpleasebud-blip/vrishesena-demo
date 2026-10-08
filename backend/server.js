@@ -45,8 +45,8 @@ app.use('/api/admin', adminRoutes);
 // Serve Frontend Static Files in Production
 app.use(express.static(frontendDistPath));
 
-// Fallback for React Router (SPA)
-app.get('*', (req, res, next) => {
+// Fallback for React Router (SPA) - Express 5 compatible
+app.use((req, res, next) => {
   if (req.path.startsWith('/api')) {
     return next();
   }
