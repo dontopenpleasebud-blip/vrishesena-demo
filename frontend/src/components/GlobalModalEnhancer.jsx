@@ -93,6 +93,222 @@ export default function GlobalModalEnhancer() {
 
     document.addEventListener('click', handleDocumentClick, true);
 
+    // ----------------------------------------------------
+    // 3. Global Mobile Drawer Sidebar Toggling
+    // ----------------------------------------------------
+    const handleMenuClick = (e) => {
+      // Menu Hamburger Icon Trigger
+      const menuBtn = e.target.closest('.menu_icon, .menubar, .ri-menu-4-line, .middle_menu_line, .mob_navbar_cstm .menubar');
+      if (menuBtn) {
+        e.preventDefault();
+        const drawer = document.querySelector('.mobile_nav_version, .mob_nav, .mobile_nav');
+        const overlay = document.querySelector('.mobile-drawer-backdrop');
+        if (drawer) {
+          drawer.classList.add('active_sidebar');
+          drawer.style.transform = 'translateX(0)';
+          if (overlay) overlay.style.display = 'block';
+        }
+        return;
+      }
+
+      // Menu Close Button Trigger
+      const closeBtn = e.target.closest('.close-menu, .mobile-drawer-backdrop');
+      if (closeBtn) {
+        e.preventDefault();
+        const drawer = document.querySelector('.mobile_nav_version, .mob_nav, .mobile_nav');
+        const overlay = document.querySelector('.mobile-drawer-backdrop');
+        if (drawer) {
+          drawer.classList.remove('active_sidebar');
+          drawer.style.transform = 'translateX(-100%)';
+        }
+        if (overlay) overlay.style.display = 'none';
+        return;
+      }
+
+      // Close drawer when clicking links inside mobile sidebar
+      const drawerLink = e.target.closest('.mobile_nav_version a, .sub_link a');
+      if (drawerLink) {
+        const drawer = document.querySelector('.mobile_nav_version, .mob_nav, .mobile_nav');
+        const overlay = document.querySelector('.mobile-drawer-backdrop');
+        if (drawer) {
+          drawer.classList.remove('active_sidebar');
+          drawer.style.transform = 'translateX(-100%)';
+        }
+        if (overlay) overlay.style.display = 'none';
+      }
+
+      // ----------------------------------------------------
+      // 4. Search Overlay Toggling
+      // ----------------------------------------------------
+      const searchTrigger = e.target.closest('.search_icon');
+      if (searchTrigger) {
+        e.preventDefault();
+        const searchDiv = document.querySelector('.search');
+        if (searchDiv) {
+          searchDiv.style.display = 'block';
+          searchDiv.classList.add('active_search');
+          const input = searchDiv.querySelector('input');
+          if (input) input.focus();
+        }
+        return;
+      }
+
+      const searchCloseBtn = e.target.closest('.search_close, .search_close_container button');
+      if (searchCloseBtn) {
+        e.preventDefault();
+        const searchDiv = document.querySelector('.search');
+        if (searchDiv) {
+          searchDiv.style.display = 'none';
+          searchDiv.classList.remove('active_search');
+        }
+        return;
+      }
+    };
+
+    document.addEventListener('click', handleMenuClick);
+
+    // Escape key listener for drawer and search
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        const drawer = document.querySelector('.mobile_nav_version, .mob_nav, .mobile_nav');
+        const overlay = document.querySelector('.mobile-drawer-backdrop');
+        if (drawer) {
+          drawer.classList.remove('active_sidebar');
+          drawer.style.transform = 'translateX(-100%)';
+        }
+        if (overlay) overlay.style.display = 'none';
+
+        const searchDiv = document.querySelector('.search');
+        if (searchDiv) searchDiv.style.display = 'none';
+
+        setMonthlyModalOpen(false);
+        setTrackModalOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Ensure mobile backdrop element exists
+    if (!document.querySelector('.mobile-drawer-backdrop')) {
+      const backdrop = document.createElement('div');
+      backdrop.className = 'mobile-drawer-backdrop';
+      backdrop.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 99998;
+        display: none;
+        transition: opacity 0.3s ease;
+      `;
+      document.body.appendChild(backdrop);
+    }
+
+    // Inject Responsive CSS Fixes for Navbars
+    if (!document.querySelector('#responsive-navbar-styles')) {
+      const style = document.createElement('style');
+      style.id = 'responsive-navbar-styles';
+      style.textContent = `
+        /* Mobile Drawer Sidebar Fixes */
+        .mobile_nav_version {
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          width: 320px !important;
+          max-width: 85vw !important;
+          height: 100vh !important;
+          background: #ffffff !important;
+          z-index: 99999 !important;
+          overflow-y: auto !important;
+          transform: translateX(-100%);
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          box-shadow: 4px 0 25px rgba(0,0,0,0.15) !important;
+        }
+        .mobile_nav_version.active_sidebar {
+          transform: translateX(0) !important;
+        }
+
+        /* Bottom Sticky Mobile Navigation Bar */
+        @media (max-width: 991px) {
+          .bottom-nav {
+            display: flex !important;
+            position: fixed !important;
+            bottom: 12px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: calc(100% - 24px) !important;
+            max-width: 480px !important;
+            height: 62px !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(12px) !important;
+            border-radius: 18px !important;
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+            z-index: 99990 !important;
+            padding: 4px 12px !important;
+            align-items: center !important;
+            justify-content: space-around !important;
+          }
+          .bottom-nav .nav-container {
+            display: flex !important;
+            width: 100% !important;
+            align-items: center !important;
+            justify-content: space-around !important;
+          }
+          .bottom-nav .nav-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: #64748b !important;
+            text-decoration: none !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            transition: color 0.2s ease !important;
+          }
+          .bottom-nav .nav-item i {
+            font-size: 20px !important;
+            margin-bottom: 2px !important;
+          }
+          .bottom-nav .nav-item.active,
+          .bottom-nav .nav-item:hover {
+            color: #ea580c !important;
+          }
+          .bottom-nav .heart_container .heart-btn {
+            background: linear-gradient(135deg, #ea580c, #c2410c) !important;
+            color: #ffffff !important;
+            width: 46px !important;
+            height: 46px !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 6px 16px rgba(234, 88, 12, 0.4) !important;
+            margin-top: -18px !important;
+          }
+          .bottom-nav .heart_container .heart-btn i {
+            font-size: 24px !important;
+            margin-bottom: 0 !important;
+            color: #ffffff !important;
+          }
+        }
+
+        @media (min-width: 992px) {
+          .bottom-nav {
+            display: none !important;
+          }
+        }
+
+        /* Search Overlay Styles */
+        .search {
+          z-index: 999995 !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
     // Also hide any native staticBackdrop that might try to open
     const hideLegacyModals = () => {
       const legacyModals = document.querySelectorAll('#staticBackdrop, #trackDonationModal');
@@ -102,12 +318,25 @@ export default function GlobalModalEnhancer() {
           m.classList.remove('show');
         }
       });
+
+      // Highlight active route in bottom navigation
+      const currentPath = window.location.pathname;
+      document.querySelectorAll('.bottom-nav .nav-item').forEach((item) => {
+        const href = item.getAttribute('href');
+        if (href === currentPath || (href !== '/' && currentPath.startsWith(href))) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
     };
 
     const timer = setInterval(hideLegacyModals, 1000);
 
     return () => {
       document.removeEventListener('click', handleDocumentClick, true);
+      document.removeEventListener('click', handleMenuClick);
+      document.removeEventListener('keydown', handleKeyDown);
       clearInterval(timer);
     };
   }, []);
@@ -788,6 +1017,46 @@ export default function GlobalModalEnhancer() {
           </div>
         </div>
       )}
+
+      {/* ── Global Mobile Bottom Navigation Bar ── */}
+      <nav className="bottom-nav">
+        <div className="nav-container">
+          <a href="/" className="nav-item" data-nav="home">
+            <i className="ri-home-5-fill"></i>
+            <span>Home</span>
+          </a>
+
+          <a href="/causes" className="nav-item" data-nav="explore">
+            <i className="ri-gift-fill"></i>
+            <span>Campaigns</span>
+          </a>
+
+          <div className="heart_container">
+            <a
+              href="#track"
+              className="nav-item heart-btn"
+              data-nav="volunteer"
+              onClick={(e) => {
+                e.preventDefault();
+                setTrackModalOpen(true);
+                setTrackRecordsLoaded(true);
+              }}
+            >
+              <i className="ri-heart-3-fill heart_icon_bottom"></i>
+            </a>
+          </div>
+
+          <a href="/volunteer" className="nav-item" data-nav="donate">
+            <i className="ri-hand-heart-fill"></i>
+            <span>Volunteer</span>
+          </a>
+
+          <a href="/profile" className="nav-item" data-nav="profile">
+            <i className="ri-user-3-fill"></i>
+            <span>Profile</span>
+          </a>
+        </div>
+      </nav>
     </>
   );
 }
