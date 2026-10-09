@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function GlobalModalEnhancer() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const [monthlyModalOpen, setMonthlyModalOpen] = useState(false);
   const [monthlyTab, setMonthlyTab] = useState('education');
@@ -9,6 +13,16 @@ export default function GlobalModalEnhancer() {
   const [monthlyPhone, setMonthlyPhone] = useState('');
   const [monthlyEmail, setMonthlyEmail] = useState('');
   const [monthlyPan, setMonthlyPan] = useState('');
+
+  // Mobile Drawer State
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [causesMenuOpen, setCausesMenuOpen] = useState(false);
+
+  // Auto-close drawer on route changes
+  useEffect(() => {
+    setMobileDrawerOpen(false);
+    setCausesMenuOpen(false);
+  }, [location.pathname]);
 
   // Track Donation state
   const [trackModalOpen, setTrackModalOpen] = useState(false);
@@ -98,43 +112,14 @@ export default function GlobalModalEnhancer() {
     // ----------------------------------------------------
     const handleMenuClick = (e) => {
       // Menu Hamburger Icon Trigger
-      const menuBtn = e.target.closest('.menu_icon, .menubar, .ri-menu-4-line, .middle_menu_line, .mob_navbar_cstm .menubar');
+      const menuBtn = e.target.closest(
+        '.menu_icon, .menubar, .ri-menu-4-line, .middle_menu_line, .top_menu_line, .bottom_menu_line, .mob_navbar_cstm .menubar, .menu_line'
+      );
       if (menuBtn) {
         e.preventDefault();
-        const drawer = document.querySelector('.mobile_nav_version, .mob_nav, .mobile_nav');
-        const overlay = document.querySelector('.mobile-drawer-backdrop');
-        if (drawer) {
-          drawer.classList.add('active_sidebar');
-          drawer.style.transform = 'translateX(0)';
-          if (overlay) overlay.style.display = 'block';
-        }
+        e.stopPropagation();
+        setMobileDrawerOpen((prev) => !prev);
         return;
-      }
-
-      // Menu Close Button Trigger
-      const closeBtn = e.target.closest('.close-menu, .mobile-drawer-backdrop');
-      if (closeBtn) {
-        e.preventDefault();
-        const drawer = document.querySelector('.mobile_nav_version, .mob_nav, .mobile_nav');
-        const overlay = document.querySelector('.mobile-drawer-backdrop');
-        if (drawer) {
-          drawer.classList.remove('active_sidebar');
-          drawer.style.transform = 'translateX(-100%)';
-        }
-        if (overlay) overlay.style.display = 'none';
-        return;
-      }
-
-      // Close drawer when clicking links inside mobile sidebar
-      const drawerLink = e.target.closest('.mobile_nav_version a, .sub_link a');
-      if (drawerLink) {
-        const drawer = document.querySelector('.mobile_nav_version, .mob_nav, .mobile_nav');
-        const overlay = document.querySelector('.mobile-drawer-backdrop');
-        if (drawer) {
-          drawer.classList.remove('active_sidebar');
-          drawer.style.transform = 'translateX(-100%)';
-        }
-        if (overlay) overlay.style.display = 'none';
       }
 
       // ----------------------------------------------------
@@ -170,14 +155,7 @@ export default function GlobalModalEnhancer() {
     // Escape key listener for drawer and search
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        const drawer = document.querySelector('.mobile_nav_version, .mob_nav, .mobile_nav');
-        const overlay = document.querySelector('.mobile-drawer-backdrop');
-        if (drawer) {
-          drawer.classList.remove('active_sidebar');
-          drawer.style.transform = 'translateX(-100%)';
-        }
-        if (overlay) overlay.style.display = 'none';
-
+        setMobileDrawerOpen(false);
         const searchDiv = document.querySelector('.search');
         if (searchDiv) searchDiv.style.display = 'none';
 
@@ -187,47 +165,348 @@ export default function GlobalModalEnhancer() {
     };
     document.addEventListener('keydown', handleKeyDown);
 
-    // Ensure mobile backdrop element exists
-    if (!document.querySelector('.mobile-drawer-backdrop')) {
-      const backdrop = document.createElement('div');
-      backdrop.className = 'mobile-drawer-backdrop';
-      backdrop.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(4px);
-        z-index: 99998;
-        display: none;
-        transition: opacity 0.3s ease;
-      `;
-      document.body.appendChild(backdrop);
+    // Clean up any old backdrop element if present
+    const oldBackdrop = document.querySelector('.mobile-drawer-backdrop');
+    if (oldBackdrop) {
+      oldBackdrop.remove();
     }
 
-    // Inject Responsive CSS Fixes for Navbars
+    // Inject Responsive CSS Fixes for Navbars & Mobile Drawer
     if (!document.querySelector('#responsive-navbar-styles')) {
       const style = document.createElement('style');
       style.id = 'responsive-navbar-styles';
       style.textContent = `
-        /* Mobile Drawer Sidebar Fixes */
-        .mobile_nav_version {
+        /* Hide legacy static mobile sidebars to prevent blurred trapping */
+        .mobile_nav_version,
+        .mobile_nav {
+          display: none !important;
+        }
+
+        /* Unified React Mobile Drawer Backdrop */
+        .custom-mobile-drawer-backdrop {
+          position: fixed !important;
+          inset: 0 !important;
+          width: 100vw !important;
+          height: 100vh !important;
+          height: 100dvh !important;
+          background: rgba(15, 23, 42, 0.6) !important;
+          backdrop-filter: blur(6px) !important;
+          -webkit-backdrop-filter: blur(6px) !important;
+          z-index: 99998 !important;
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s !important;
+        }
+        .custom-mobile-drawer-backdrop.is-active {
+          opacity: 1 !important;
+          visibility: visible !important;
+          pointer-events: auto !important;
+        }
+
+        /* Unified React Mobile Drawer Sidebar */
+        .custom-mobile-drawer {
           position: fixed !important;
           top: 0 !important;
           left: 0 !important;
           width: 320px !important;
-          max-width: 85vw !important;
+          max-width: 86vw !important;
           height: 100vh !important;
+          height: 100dvh !important;
           background: #ffffff !important;
-          z-index: 99999 !important;
+          z-index: 999999 !important;
           overflow-y: auto !important;
-          transform: translateX(-100%);
-          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-          box-shadow: 4px 0 25px rgba(0,0,0,0.15) !important;
+          -webkit-overflow-scrolling: touch !important;
+          display: flex !important;
+          flex-direction: column !important;
+          box-shadow: 8px 0 35px rgba(0, 0, 0, 0.25) !important;
+          transform: translateX(-105%) !important;
+          transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
+          pointer-events: auto !important;
+          opacity: 1 !important;
+          filter: none !important;
+          backdrop-filter: none !important;
         }
-        .mobile_nav_version.active_sidebar {
+        .custom-mobile-drawer.is-open {
           transform: translateX(0) !important;
+        }
+
+        /* Drawer Header */
+        .drawer-header {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          padding: 16px 20px !important;
+          border-bottom: 1px solid #f1f5f9 !important;
+          background: #ffffff !important;
+          position: sticky !important;
+          top: 0 !important;
+          z-index: 10 !important;
+        }
+        .drawer-logo img {
+          height: 44px !important;
+          width: auto !important;
+          object-fit: contain !important;
+        }
+        .drawer-close-btn {
+          width: 36px !important;
+          height: 36px !important;
+          border-radius: 50% !important;
+          border: 1px solid #e2e8f0 !important;
+          background: #f8fafc !important;
+          color: #334155 !important;
+          font-size: 20px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          cursor: pointer !important;
+          transition: all 0.2s ease !important;
+          padding: 0 !important;
+        }
+        .drawer-close-btn:hover {
+          background: #fee2e2 !important;
+          color: #ef4444 !important;
+          border-color: #fca5a5 !important;
+          transform: scale(1.05) !important;
+        }
+
+        /* Drawer Quick Action Buttons */
+        .drawer-quick-actions {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
+          gap: 10px !important;
+          padding: 14px 20px !important;
+          background: #f8fafc !important;
+          border-bottom: 1px solid #f1f5f9 !important;
+        }
+        .drawer-action-btn {
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 6px !important;
+          padding: 9px 12px !important;
+          border-radius: 10px !important;
+          font-size: 13px !important;
+          font-weight: 700 !important;
+          text-decoration: none !important;
+          cursor: pointer !important;
+          border: none !important;
+          transition: all 0.2s ease !important;
+          text-align: center !important;
+        }
+        .drawer-donate-btn {
+          background: #ff4500 !important;
+          color: #ffffff !important;
+          box-shadow: 0 4px 12px rgba(255, 69, 0, 0.25) !important;
+        }
+        .drawer-donate-btn:hover {
+          background: #e03d00 !important;
+          color: #ffffff !important;
+        }
+        .drawer-volunteer-btn {
+          background: #0284c7 !important;
+          color: #ffffff !important;
+          box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25) !important;
+        }
+        .drawer-volunteer-btn:hover {
+          background: #0369a1 !important;
+          color: #ffffff !important;
+        }
+
+        /* Drawer Nav */
+        .drawer-nav {
+          padding: 10px 16px !important;
+          flex: 1 !important;
+        }
+        .drawer-links-list {
+          list-style: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        .drawer-links-list > li {
+          margin-bottom: 2px !important;
+          border-bottom: 1px solid #f8fafc !important;
+        }
+        .drawer-nav-item {
+          display: flex !important;
+          align-items: center !important;
+          gap: 12px !important;
+          padding: 12px 14px !important;
+          color: #1e293b !important;
+          font-size: 15px !important;
+          font-weight: 600 !important;
+          text-decoration: none !important;
+          border-radius: 10px !important;
+          transition: all 0.2s ease !important;
+          cursor: pointer !important;
+        }
+        .drawer-nav-item i {
+          font-size: 18px !important;
+          color: #64748b !important;
+          transition: color 0.2s ease !important;
+        }
+        .drawer-nav-item:hover,
+        .drawer-nav-item.active {
+          background: #f0f9ff !important;
+          color: #0284c7 !important;
+        }
+        .drawer-nav-item:hover i,
+        .drawer-nav-item.active i {
+          color: #0284c7 !important;
+        }
+
+        /* Drawer Accordion */
+        .drawer-accordion-header {
+          justify-content: space-between !important;
+        }
+        .drawer-accordion-title {
+          display: flex !important;
+          align-items: center !important;
+          gap: 12px !important;
+        }
+        .accordion-arrow {
+          font-size: 18px !important;
+          color: #94a3b8 !important;
+          transition: transform 0.25s ease !important;
+        }
+        .accordion-arrow.is-rotated {
+          transform: rotate(180deg) !important;
+          color: #0284c7 !important;
+        }
+        .drawer-sublinks-list {
+          list-style: none !important;
+          padding: 6px 10px 10px 10px !important;
+          margin: 0 0 8px 0 !important;
+          background: #f8fafc !important;
+          border-radius: 12px !important;
+          border: 1px solid #e2e8f0 !important;
+          max-height: 340px !important;
+          overflow-y: auto !important;
+        }
+        .drawer-all-causes {
+          display: block !important;
+          font-size: 13px !important;
+          font-weight: 700 !important;
+          color: #0284c7 !important;
+          padding: 8px 10px !important;
+          background: #e0f2fe !important;
+          border-radius: 8px !important;
+          text-decoration: none !important;
+          margin-bottom: 8px !important;
+          text-align: center !important;
+        }
+        .drawer-sublink-header {
+          display: block !important;
+          font-size: 11px !important;
+          font-weight: 700 !important;
+          color: #64748b !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.5px !important;
+          padding: 8px 6px 4px 6px !important;
+        }
+        .drawer-nested-links {
+          list-style: none !important;
+          padding: 0 !important;
+          margin: 0 0 6px 0 !important;
+        }
+        .drawer-nested-links li a {
+          display: block !important;
+          padding: 6px 10px !important;
+          font-size: 13px !important;
+          font-weight: 500 !important;
+          color: #334155 !important;
+          text-decoration: none !important;
+          border-radius: 6px !important;
+          transition: background 0.15s ease, color 0.15s ease !important;
+        }
+        .drawer-nested-links li a:hover {
+          background: #ffffff !important;
+          color: #0284c7 !important;
+        }
+
+        /* Drawer Footer */
+        .drawer-footer {
+          padding: 16px 20px 80px 20px !important;
+          background: #f8fafc !important;
+          border-top: 1px solid #f1f5f9 !important;
+          margin-top: auto !important;
+        }
+        .drawer-contact-snippet {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 6px !important;
+          margin-bottom: 14px !important;
+        }
+        .drawer-phone-link,
+        .drawer-email-link {
+          font-size: 12px !important;
+          color: #64748b !important;
+          text-decoration: none !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 8px !important;
+        }
+        .drawer-phone-link:hover,
+        .drawer-email-link:hover {
+          color: #0284c7 !important;
+        }
+        .drawer-socials {
+          display: flex !important;
+          align-items: center !important;
+          gap: 10px !important;
+        }
+        .drawer-socials a {
+          width: 34px !important;
+          height: 34px !important;
+          border-radius: 50% !important;
+          background: #ffffff !important;
+          border: 1px solid #e2e8f0 !important;
+          color: #64748b !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          text-decoration: none !important;
+          font-size: 16px !important;
+          transition: all 0.2s ease !important;
+        }
+        .drawer-socials a:hover {
+          background: #0284c7 !important;
+          border-color: #0284c7 !important;
+          color: #ffffff !important;
+          transform: translateY(-2px) !important;
+        }
+
+        /* Hide awkward floating vertical tab on small screens */
+        @media (max-width: 768px) {
+          .donate_monthly_btn {
+            display: none !important;
+          }
+          .navbar_cstm {
+            height: 64px !important;
+            padding: 8px 16px !important;
+          }
+          .first_nav {
+            gap: 16px !important;
+          }
+          .logo_cstm img {
+            max-height: 44px !important;
+          }
+          .track_menu {
+            gap: 10px !important;
+          }
+          .desk-login-btn {
+            padding: 6px 12px !important;
+            font-size: 13px !important;
+          }
+          .donate_monthly_btn_2 {
+            padding: 6px 10px !important;
+            font-size: 18px !important;
+          }
+          .menubar {
+            height: 38px !important;
+            width: 38px !important;
+            padding: 8px !important;
+          }
         }
 
         /* Bottom Sticky Mobile Navigation Bar */
@@ -1057,6 +1336,511 @@ export default function GlobalModalEnhancer() {
           </a>
         </div>
       </nav>
+
+      {/* ── Global Custom Mobile Drawer & Backdrop ── */}
+      <div
+        className={`custom-mobile-drawer-backdrop ${mobileDrawerOpen ? 'is-active' : ''}`}
+        onClick={() => setMobileDrawerOpen(false)}
+        aria-hidden={!mobileDrawerOpen}
+      />
+
+      <aside
+        className={`custom-mobile-drawer ${mobileDrawerOpen ? 'is-open' : ''}`}
+        aria-label="Mobile Navigation Drawer"
+      >
+        {/* Drawer Header with Logo and Close Button */}
+        <div className="drawer-header">
+          <a
+            href="/"
+            className="drawer-logo"
+            onClick={(e) => {
+              e.preventDefault();
+              setMobileDrawerOpen(false);
+              navigate('/');
+            }}
+          >
+            <img src="/static/website/assets/images/logo/logo.webp" alt="Vrishasena Foundation" />
+          </a>
+          <button
+            type="button"
+            className="drawer-close-btn"
+            onClick={() => setMobileDrawerOpen(false)}
+            aria-label="Close menu"
+          >
+            <i className="ri-close-line"></i>
+          </button>
+        </div>
+
+        {/* Quick Action Badges */}
+        <div className="drawer-quick-actions">
+          <button
+            type="button"
+            className="drawer-action-btn drawer-donate-btn"
+            onClick={() => {
+              setMobileDrawerOpen(false);
+              setMonthlyModalOpen(true);
+            }}
+          >
+            <i className="ri-heart-add-fill"></i> Donate Monthly
+          </button>
+          <a
+            href="/volunteer"
+            className="drawer-action-btn drawer-volunteer-btn"
+            onClick={(e) => {
+              e.preventDefault();
+              setMobileDrawerOpen(false);
+              navigate('/volunteer');
+            }}
+          >
+            <i className="ri-hand-heart-line"></i> Volunteer
+          </a>
+        </div>
+
+        {/* Navigation Links */}
+        <nav className="drawer-nav">
+          <ul className="drawer-links-list">
+            <li>
+              <a
+                href="/"
+                className={`drawer-nav-item ${location.pathname === '/' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileDrawerOpen(false);
+                  navigate('/');
+                }}
+              >
+                <i className="ri-home-5-line"></i> Home
+              </a>
+            </li>
+
+            <li>
+              <a
+                href="/about"
+                className={`drawer-nav-item ${location.pathname === '/about' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileDrawerOpen(false);
+                  navigate('/about');
+                }}
+              >
+                <i className="ri-information-line"></i> About Us
+              </a>
+            </li>
+
+            {/* Causes Accordion */}
+            <li className="drawer-accordion-group">
+              <div
+                className="drawer-nav-item drawer-accordion-header"
+                onClick={() => setCausesMenuOpen((prev) => !prev)}
+              >
+                <div className="drawer-accordion-title">
+                  <i className="ri-heart-pulse-line"></i>
+                  <span>Causes & Programs</span>
+                </div>
+                <i
+                  className={`ri-arrow-down-s-line accordion-arrow ${
+                    causesMenuOpen ? 'is-rotated' : ''
+                  }`}
+                ></i>
+              </div>
+
+              {causesMenuOpen && (
+                <ul className="drawer-sublinks-list">
+                  <li>
+                    <a
+                      href="/causes"
+                      className="drawer-sublink drawer-all-causes"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setMobileDrawerOpen(false);
+                        navigate('/causes');
+                      }}
+                    >
+                      <span>🌟 View All Causes</span>
+                    </a>
+                  </li>
+                  <li>
+                    <span className="drawer-sublink-header">🥗 Food & Nutrition</span>
+                    <ul className="drawer-nested-links">
+                      <li>
+                        <a
+                          href="/food"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/food');
+                          }}
+                        >
+                          Fight Hunger Together
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/homeless"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/homeless');
+                          }}
+                        >
+                          Feed a Homeless Person
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/causes-detail/water_bottle"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/causes-detail/water_bottle');
+                          }}
+                        >
+                          Fight Thirst. Share Water
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/causes-detail/chicken_briyani"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/causes-detail/chicken_briyani');
+                          }}
+                        >
+                          Chicken Biryani
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/causes-detail/stray_dog"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/causes-detail/stray_dog');
+                          }}
+                        >
+                          Feed a Stray Dog
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/causes-detail/thaali"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/causes-detail/thaali');
+                          }}
+                        >
+                          Thaali Meals
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/causes-detail/cow_feeding"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/causes-detail/cow_feeding');
+                          }}
+                        >
+                          Cow Feeding
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+
+                  <li>
+                    <span className="drawer-sublink-header">👶 Child & Mother Care</span>
+                    <ul className="drawer-nested-links">
+                      <li>
+                        <a
+                          href="/egg_milk"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/egg_milk');
+                          }}
+                        >
+                          Egg & Milk Distribution
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/causes-detail/hygiene_kit"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/causes-detail/hygiene_kit');
+                          }}
+                        >
+                          Hygiene Kit
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/causes-detail/childcare_kit"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/causes-detail/childcare_kit');
+                          }}
+                        >
+                          Child Care Kit
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/causes-detail/bicycle"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/causes-detail/bicycle');
+                          }}
+                        >
+                          Bicycle For Girls
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+
+                  <li>
+                    <span className="drawer-sublink-header">📚 Education & Welfare</span>
+                    <ul className="drawer-nested-links">
+                      <li>
+                        <a
+                          href="/CrowdFundEducation/Educationindex"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/CrowdFundEducation/Educationindex');
+                          }}
+                        >
+                          Stop Child Labour
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/causes-detail/child_education"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/causes-detail/child_education');
+                          }}
+                        >
+                          Educate a Child
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/causes-detail/school_bag"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/causes-detail/school_bag');
+                          }}
+                        >
+                          School Bag & Supplies
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+
+                  <li>
+                    <span className="drawer-sublink-header">🏥 Healthcare & Special Events</span>
+                    <ul className="drawer-nested-links">
+                      <li>
+                        <a
+                          href="/CrowdFundHealthcare"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/CrowdFundHealthcare');
+                          }}
+                        >
+                          Save Lives Through Healthcare
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/celebration"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/celebration');
+                          }}
+                        >
+                          Birthday Celebration
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/orphanage"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/orphanage');
+                          }}
+                        >
+                          Support An Orphanage
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/livelihood"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/livelihood');
+                          }}
+                        >
+                          Empower Dreams Through Livelihood
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/environment"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileDrawerOpen(false);
+                            navigate('/environment');
+                          }}
+                        >
+                          Environment Welfare
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            <li>
+              <a
+                href="/new-blog"
+                className={`drawer-nav-item ${location.pathname === '/new-blog' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileDrawerOpen(false);
+                  navigate('/new-blog');
+                }}
+              >
+                <i className="ri-article-line"></i> Blog
+              </a>
+            </li>
+
+            <li>
+              <a
+                href="/blog"
+                className={`drawer-nav-item ${location.pathname === '/blog' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileDrawerOpen(false);
+                  navigate('/blog');
+                }}
+              >
+                <i className="ri-building-line"></i> CSR Activities
+              </a>
+            </li>
+
+            <li>
+              <a
+                href="/gallery"
+                className={`drawer-nav-item ${location.pathname === '/gallery' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileDrawerOpen(false);
+                  navigate('/gallery');
+                }}
+              >
+                <i className="ri-image-line"></i> Gallery
+              </a>
+            </li>
+
+            <li>
+              <a
+                href="/contact"
+                className={`drawer-nav-item ${location.pathname === '/contact' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileDrawerOpen(false);
+                  navigate('/contact');
+                }}
+              >
+                <i className="ri-phone-line"></i> Contact Us
+              </a>
+            </li>
+
+            <li>
+              <a
+                href="/profile"
+                className={`drawer-nav-item ${location.pathname === '/profile' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileDrawerOpen(false);
+                  navigate('/profile');
+                }}
+              >
+                <i className="ri-user-line"></i> My Account / Login
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        {/* Drawer Footer & Social Media */}
+        <div className="drawer-footer">
+          <div className="drawer-contact-snippet">
+            <a href="tel:+919951672673" className="drawer-phone-link">
+              <i className="ri-phone-fill"></i> +91 9951 672 673
+            </a>
+            <a href="mailto:office@thaagam.email" className="drawer-email-link">
+              <i className="ri-mail-line"></i> office@thaagam.email
+            </a>
+          </div>
+
+          <div className="drawer-socials">
+            <a
+              href="https://www.facebook.com/people/Vrishasena-Foundation-NGO/100077294806563/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+            >
+              <i className="ri-facebook-circle-fill"></i>
+            </a>
+            <a
+              href="https://twitter.com/vrishasenango"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Twitter"
+            >
+              <i className="ri-twitter-x-fill"></i>
+            </a>
+            <a
+              href="https://www.instagram.com/vrishasenafoundation/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+            >
+              <i className="ri-instagram-fill"></i>
+            </a>
+            <a
+              href="https://www.linkedin.com/company/vrishasenafoundation/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+            >
+              <i className="ri-linkedin-box-fill"></i>
+            </a>
+            <a
+              href="https://www.youtube.com/@vrishasenafoundation9777"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="YouTube"
+            >
+              <i className="ri-youtube-fill"></i>
+            </a>
+          </div>
+        </div>
+      </aside>
     </>
   );
 }
