@@ -72,10 +72,11 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
+const SERVER_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
 
 app.listen(PORT, () => {
-  console.log(`🚀 Vrishasena Foundation Backend server running on http://localhost:${PORT}`);
-  console.log(`📋 API Health Check available at http://localhost:${PORT}/api/health`);
-  console.log(`📦 Causes endpoint: http://localhost:${PORT}/api/causes`);
-  console.log(`🔑 Admin Auth endpoint: http://localhost:${PORT}/api/admin/login`);
+  console.log(`🚀 Vrishasena Foundation Backend server running on ${SERVER_URL}`);
+  console.log(`📋 API Health Check available at ${SERVER_URL}/api/health`);
+  console.log(`📦 Causes endpoint: ${SERVER_URL}/api/causes`);
+  console.log(`🔑 Admin Auth endpoint: ${SERVER_URL}/api/admin/login`);
 });
