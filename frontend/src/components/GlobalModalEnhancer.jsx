@@ -184,10 +184,46 @@ export default function GlobalModalEnhancer() {
           -moz-osx-font-smoothing: grayscale !important;
         }
 
-        /* Hide legacy static mobile sidebars to prevent blurred trapping */
-        .mobile_nav_version,
-        .mobile_nav {
-          display: none !important;
+        /* Hide legacy mobile sidebars only on mobile viewports (<992px) */
+        @media (max-width: 991px) {
+          .mobile_nav_version,
+          .mobile_nav {
+            display: none !important;
+          }
+        }
+
+        /* Ensure desktop navbar links remain clearly visible and properly aligned on desktop (>=992px) */
+        @media (min-width: 992px) {
+          .desk_version .mobile_nav,
+          .first_nav .mobile_nav {
+            display: flex !important;
+            position: static !important;
+            transform: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            width: auto !important;
+            height: auto !important;
+            align-items: center !important;
+          }
+          .desk_version .mobile_nav .dark_logo,
+          .desk_version .mobile_nav .social_icons {
+            display: none !important;
+          }
+          .desk_version .nav_links {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 20px !important;
+            list-style: none !important;
+            margin: 0 0 0 24px !important;
+            padding: 0 !important;
+          }
+          .desk_version .nav_li {
+            display: inline-block !important;
+          }
         }
 
         /* Unified React Mobile Drawer Backdrop */
