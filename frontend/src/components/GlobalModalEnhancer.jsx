@@ -176,6 +176,14 @@ export default function GlobalModalEnhancer() {
       const style = document.createElement('style');
       style.id = 'responsive-navbar-styles';
       style.textContent = `
+        /* Guarantee Remixicon icons always render properly across all elements */
+        [class^="ri-"], [class*=" ri-"], i[class*="ri-"], i[class^="ri-"], .cstm-icon-color {
+          font-family: 'remixicon' !important;
+          font-style: normal !important;
+          -webkit-font-smoothing: antialiased !important;
+          -moz-osx-font-smoothing: grayscale !important;
+        }
+
         /* Hide legacy static mobile sidebars to prevent blurred trapping */
         .mobile_nav_version,
         .mobile_nav {

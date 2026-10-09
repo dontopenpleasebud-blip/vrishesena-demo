@@ -36,9 +36,24 @@ html, body, #root, .main_section, main {
 }
 
 /* Nav typography matching exact reference in Image 1 */
-.navbar_cstm,
-.navbar_cstm * {
-  font-family: 'Lato', sans-serif !important;
+.navbar_cstm {
+  font-family: 'Lato', sans-serif;
+}
+
+.navbar_cstm :not(i):not([class*="ri-"]):not([class^="ri-"]) {
+  font-family: 'Lato', sans-serif;
+}
+
+/* Ensure Remixicon font-family is ALWAYS preserved globally across all elements */
+i[class*="ri-"],
+i[class^="ri-"],
+[class*="ri-"],
+[class^="ri-"],
+.cstm-icon-color {
+  font-family: 'remixicon' !important;
+  font-style: normal !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
 }
 
 .nav_links {
